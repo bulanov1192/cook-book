@@ -1,0 +1,19 @@
+.empty {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: start;
+  padding: clamp(1.35rem, 2vw, 1.8rem);
+  border-radius: var(--radius-xl);
+  border: 1px dashed rgba(108, 72, 44, 0.25);
+  background: rgba(255, 250, 243, 0.6);
+}
+
+.title {
+  font-size: 1.55rem;
+}
+
+.description {
+  color: var(--color-text-soft);
+  line-height: 1.7;
+  max-width: 48ch;
+}

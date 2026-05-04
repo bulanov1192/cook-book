@@ -1,0 +1,22 @@
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.copy {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.title {
+  font-size: clamp(1.45rem, 3vw, 2.1rem);
+}
+
+.subtitle {
+  color: var(--color-text-soft);
+  line-height: 1.6;
+  max-width: 56ch;
+}

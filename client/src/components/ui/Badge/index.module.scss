@@ -1,0 +1,32 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.7rem;
+  padding: 0.22rem 0.62rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.accent {
+  background: rgba(200, 93, 43, 0.14);
+  color: var(--color-accent-deep);
+}
+
+.neutral {
+  background: rgba(108, 72, 44, 0.1);
+  color: var(--color-text-soft);
+}
+
+.success {
+  background: rgba(46, 125, 91, 0.12);
+  color: var(--color-success);
+}
+
+.danger {
+  background: rgba(176, 59, 46, 0.12);
+  color: var(--color-danger);
+}

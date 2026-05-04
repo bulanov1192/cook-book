@@ -1,0 +1,39 @@
+.intro {
+  display: grid;
+  gap: 0.85rem;
+  padding: clamp(1.4rem, 3vw, 2rem);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  background:
+    radial-gradient(circle at top right, rgba(200, 93, 43, 0.13), transparent 28%),
+    var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.eyebrow {
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.title {
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  line-height: 0.98;
+  max-width: 12ch;
+}
+
+.description {
+  max-width: 62ch;
+  color: var(--color-text-soft);
+  line-height: 1.7;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}

@@ -1,0 +1,32 @@
+.field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.label {
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.optional {
+  color: var(--color-text-soft);
+  font-size: 0.78rem;
+}
+
+.hint {
+  color: var(--color-text-soft);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: 0.84rem;
+}

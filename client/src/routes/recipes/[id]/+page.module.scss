@@ -1,0 +1,78 @@
+.page {
+  display: grid;
+  gap: 1.5rem;
+  padding: 0.1rem;
+}
+
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.infoCard {
+  padding: 0.85rem 0.95rem;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.infoLabel {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-text-soft);
+}
+
+.infoValue {
+  font-weight: 800;
+}
+
+.copy {
+  color: var(--color-text-soft);
+  line-height: 1.7;
+}
+
+.list {
+  display: grid;
+  gap: 0.75rem;
+  padding-left: 1.1rem;
+}
+
+.listItem {
+  line-height: 1.65;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.inlineGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.85rem;
+  align-items: end;
+}
+
+.message {
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-lg);
+  background: rgba(46, 125, 91, 0.12);
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .inlineGrid {
+    grid-template-columns: 1fr;
+  }
+}
