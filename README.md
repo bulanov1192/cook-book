@@ -101,9 +101,15 @@ The project includes production-oriented Docker setup for:
 - `client`: SvelteKit app built with `@sveltejs/adapter-node`
 - `caddy`: reverse proxy that serves the frontend and forwards `/api`, `/docs`, and `/openapi.json`
 
+For HTTPS/domain deployments, keep:
+
+- `PUBLIC_API_BASE_URL=""` so the browser uses same-origin `/api`
+- `INTERNAL_API_BASE_URL=http://server:3000` so SvelteKit SSR can reach the backend over the Docker network
+
 ### Start with Docker Compose
 
 ```bash
+cp .env.example .env
 docker compose up --build
 ```
 
@@ -123,12 +129,28 @@ docker compose down -v
 
 ### Important environment values
 
-The default compose file is safe for local testing, but before any real deployment you should change:
+The compose file now reads its deployment settings from the repo root `.env` file.
 
-- `BETTER_AUTH_SECRET`
-- `BETTER_AUTH_URL`
-- `CORS_ORIGIN`
-- `CADDY_SITE_ADDRESS`
+Recommended workflow:
+
+1. Keep `docker-compose.yml` and `deploy/Caddyfile` in git.
+2. Keep secrets and per-server values only in `.env`.
+3. On the server:
+
+```bash
+git pull
+cp .env.example .env   # only on first setup
+nano .env              # edit domain, secret and ports if needed
+docker compose up -d --build
+```
+
+For domain + HTTPS deployment, the most important `.env` values are:
+
+- `APP_ORIGIN=https://your-domain.tld`
+- `CADDY_SITE_ADDRESS=your-domain.tld, www.your-domain.tld`
+- `BETTER_AUTH_SECRET=<long-random-secret>`
+- `PUBLIC_API_BASE_URL=`
+- `INTERNAL_API_BASE_URL=http://server:3000`
 
 SQLite data is persisted in the `server_data` Docker volume and mounted inside the backend container at `/app/data`.
 
