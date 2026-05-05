@@ -392,6 +392,11 @@
     name="description"
     content={recipe.description ?? $dictionary.recipes.detail.noDescription}
   />
+  <meta property="og:title" content={`"${recipe.title}" | Recipe details`} />
+  <meta
+    property="og:description"
+    content={recipe.description ?? $dictionary.recipes.detail.noDescription}
+  />
 </svelte:head>
 
 <div class={styles.page}>

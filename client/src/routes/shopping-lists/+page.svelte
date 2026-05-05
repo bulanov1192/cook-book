@@ -160,6 +160,11 @@
     name="description"
     content={$dictionary.meta.shoppingListsDescription}
   />
+  <meta property="og:title" content={$dictionary.meta.shoppingListsTitle} />
+  <meta
+    property="og:description"
+    content={$dictionary.meta.shoppingListsDescription}
+  />
 </svelte:head>
 
 <div class={styles.page}>

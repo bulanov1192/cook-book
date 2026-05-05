@@ -21,6 +21,11 @@
 <svelte:head>
   <title>{$dictionary.meta.newRecipeTitle}</title>
   <meta name="description" content={$dictionary.meta.newRecipeDescription} />
+  <meta property="og:title" content={$dictionary.meta.newRecipeTitle} />
+  <meta
+    property="og:description"
+    content={$dictionary.meta.newRecipeDescription}
+  />
 </svelte:head>
 
 <div class={styles.page}>

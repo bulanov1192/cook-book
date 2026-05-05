@@ -111,6 +111,16 @@
     name="description"
     content={$dictionary.meta.shoppingListsDescription}
   />
+  <meta
+    property="og:title"
+    content={formatMessage($dictionary.meta.shoppingListDetailTitle, {
+      name: list.name,
+    })}
+  />
+  <meta
+    property="og:description"
+    content={$dictionary.meta.shoppingListsDescription}
+  />
 </svelte:head>
 
 <div class={styles.page}>

@@ -23,6 +23,11 @@
 <svelte:head>
   <title>{$dictionary.meta.cookbookTitle}</title>
   <meta name="description" content={$dictionary.meta.cookbookDescription} />
+  <meta property="og:title" content={$dictionary.meta.cookbookTitle} />
+  <meta
+    property="og:description"
+    content={$dictionary.meta.cookbookDescription}
+  />
 </svelte:head>
 
 <div class={styles.page}>

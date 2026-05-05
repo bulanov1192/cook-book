@@ -105,6 +105,11 @@
 <svelte:head>
   <title>{$dictionary.meta.recipesListTitle}</title>
   <meta name="description" content={$dictionary.meta.recipesListDescription} />
+  <meta property="og:title" content={$dictionary.meta.recipesListTitle} />
+  <meta
+    property="og:description"
+    content={$dictionary.meta.recipesListDescription}
+  />
 </svelte:head>
 
 <div class={styles.page}>
