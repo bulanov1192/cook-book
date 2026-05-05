@@ -386,6 +386,14 @@
   }
 </script>
 
+<svelte:head>
+  <title>"{recipe.title}" | Recipe details</title>
+  <meta
+    name="description"
+    content={recipe.description ?? $dictionary.recipes.detail.noDescription}
+  />
+</svelte:head>
+
 <div class={styles.page}>
   <PageIntro
     eyebrow={$dictionary.recipes.detail.eyebrow}

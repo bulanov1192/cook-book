@@ -4,8 +4,8 @@
   import PageIntro from "$components/layout/PageIntro/index.svelte";
   import RecipeForm from "$components/recipes/RecipeForm/index.svelte";
   import { createRecipe } from "$lib/api/recipes";
-  import { dictionary } from "$lib/i18n";
   import type { RecipePayload } from "$lib/api/types";
+  import { dictionary } from "$lib/i18n";
   import styles from "./+page.module.scss";
 
   export let data: {
@@ -18,6 +18,11 @@
   }
 </script>
 
+<svelte:head>
+  <title>{$dictionary.meta.newRecipeTitle}</title>
+  <meta name="description" content={$dictionary.meta.newRecipeDescription} />
+</svelte:head>
+
 <div class={styles.page}>
   <PageIntro
     eyebrow={$dictionary.recipes.create.eyebrow}
@@ -26,7 +31,10 @@
   />
 
   {#if data.session.isAuthenticated}
-    <RecipeForm submitLabel={$dictionary.recipes.form.saveRecipe} onSubmit={handleSubmit} />
+    <RecipeForm
+      submitLabel={$dictionary.recipes.form.saveRecipe}
+      onSubmit={handleSubmit}
+    />
   {:else}
     <AuthPanel
       title={$dictionary.recipes.create.authTitle}

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { browser } from "$app/environment";
-  import { onMount } from "svelte";
   import AuthPanel from "$components/auth/AuthPanel/index.svelte";
   import PageIntro from "$components/layout/PageIntro/index.svelte";
   import ShoppingListCard from "$components/shopping-lists/ShoppingListCard/index.svelte";
@@ -9,11 +8,18 @@
   import EmptyState from "$components/ui/EmptyState/index.svelte";
   import Field from "$components/ui/Field/index.svelte";
   import Input from "$components/ui/Input/index.svelte";
-  import Select from "$components/ui/Select/index.svelte";
   import SectionHeader from "$components/ui/SectionHeader/index.svelte";
-  import { createShoppingList, listShoppingLists } from "$lib/api/shopping-lists";
+  import Select from "$components/ui/Select/index.svelte";
+  import {
+    createShoppingList,
+    listShoppingLists,
+  } from "$lib/api/shopping-lists";
+  import type {
+    ShoppingListSummary,
+    ShoppingListVisibility,
+  } from "$lib/api/types";
   import { dictionary, formatMessage } from "$lib/i18n";
-  import type { ShoppingListSummary, ShoppingListVisibility } from "$lib/api/types";
+  import { onMount } from "svelte";
   import styles from "./+page.module.scss";
 
   export let data: {
@@ -67,18 +73,20 @@
           isPublicReadable: created.isPublicReadable,
           itemCount: created.items.length,
           createdAt: created.createdAt,
-          updatedAt: created.updatedAt
+          updatedAt: created.updatedAt,
         },
-        ...lists
+        ...lists,
       ];
       meta = {
         ...meta,
-        total: meta.total + 1
+        total: meta.total + 1,
       };
       listName = "";
     } catch (error) {
       errorMessage =
-        error instanceof Error ? error.message : $dictionary.shoppingLists.createFailed;
+        error instanceof Error
+          ? error.message
+          : $dictionary.shoppingLists.createFailed;
     } finally {
       isSubmitting = false;
     }
@@ -95,14 +103,16 @@
     try {
       const nextPage = await listShoppingLists(fetch, {
         limit: 50,
-        offset: lists.length
+        offset: lists.length,
       });
 
       lists = [...lists, ...nextPage.items];
       meta = nextPage.meta;
     } catch (error) {
       loadMoreError =
-        error instanceof Error ? error.message : $dictionary.shoppingLists.loadMoreFailed;
+        error instanceof Error
+          ? error.message
+          : $dictionary.shoppingLists.loadMoreFailed;
     } finally {
       isLoadingMore = false;
     }
@@ -124,8 +134,8 @@
         }
       },
       {
-        rootMargin: "320px 0px"
-      }
+        rootMargin: "320px 0px",
+      },
     );
 
     observer.observe(sentinel);
@@ -144,6 +154,14 @@
   }
 </script>
 
+<svelte:head>
+  <title>{$dictionary.meta.shoppingListsTitle}</title>
+  <meta
+    name="description"
+    content={$dictionary.meta.shoppingListsDescription}
+  />
+</svelte:head>
+
 <div class={styles.page}>
   <PageIntro
     eyebrow={$dictionary.shoppingLists.pageEyebrow}
@@ -156,25 +174,34 @@
   {#if data.session.isAuthenticated}
     <Card>
       <div class={styles.createForm}>
-        <SectionHeader title={$dictionary.shoppingLists.createTitle} subtitle={$dictionary.shoppingLists.createSubtitle} />
-        
+        <SectionHeader
+          title={$dictionary.shoppingLists.createTitle}
+          subtitle={$dictionary.shoppingLists.createSubtitle}
+        />
 
         <form class={styles.createGrid} on:submit|preventDefault={handleCreate}>
           <Field label={$dictionary.shoppingLists.listName}>
-            <Input value={listName} placeholder={$dictionary.shoppingLists.listNamePlaceholder} on:input={(event) => (listName = getInputValue(event))} />
+            <Input
+              value={listName}
+              placeholder={$dictionary.shoppingLists.listNamePlaceholder}
+              on:input={(event) => (listName = getInputValue(event))}
+            />
           </Field>
           <Field label={$dictionary.shoppingLists.visibility}>
             <Select
               value={visibility}
               options={[
                 { value: "private", label: $dictionary.common.private },
-                { value: "public", label: $dictionary.common.public }
+                { value: "public", label: $dictionary.common.public },
               ]}
-              on:change={(event) => (visibility = getSelectValue(event) as ShoppingListVisibility)}
+              on:change={(event) =>
+                (visibility = getSelectValue(event) as ShoppingListVisibility)}
             />
           </Field>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? $dictionary.shoppingLists.creating : $dictionary.shoppingLists.create}
+            {isSubmitting
+              ? $dictionary.shoppingLists.creating
+              : $dictionary.shoppingLists.create}
           </Button>
         </form>
 
@@ -188,7 +215,9 @@
   <section class="page-grid">
     {#if data.session.isAuthenticated}
       <SectionHeader
-        title={formatMessage($dictionary.shoppingLists.countTitle, { count: meta.total })}
+        title={formatMessage($dictionary.shoppingLists.countTitle, {
+          count: meta.total,
+        })}
         subtitle={$dictionary.shoppingLists.countSubtitle}
       />
 
@@ -217,7 +246,10 @@
           title={$dictionary.shoppingLists.noListsTitle}
           description={$dictionary.shoppingLists.noListsDescription}
         >
-          <Button on:click={handleCreate} disabled={isSubmitting || !listName.trim()}>
+          <Button
+            on:click={handleCreate}
+            disabled={isSubmitting || !listName.trim()}
+          >
             {$dictionary.shoppingLists.quickCreate}
           </Button>
         </EmptyState>

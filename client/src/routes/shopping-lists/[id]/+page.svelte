@@ -13,15 +13,18 @@
     addShoppingListItem,
     deleteShoppingListItem,
     importRecipeToShoppingList,
-    updateShoppingListItem
+    updateShoppingListItem,
   } from "$lib/api/shopping-lists";
   import type {
     RecipeListItem,
     ShoppingList,
-    ShoppingListItemPayload
+    ShoppingListItemPayload,
   } from "$lib/api/types";
   import { dictionary, formatMessage } from "$lib/i18n";
-  import { formatShoppingListStatus, formatShoppingListVisibility } from "$utils/format";
+  import {
+    formatShoppingListStatus,
+    formatShoppingListVisibility,
+  } from "$utils/format";
   import styles from "./+page.module.scss";
 
   export let data: {
@@ -37,7 +40,7 @@
     amount: null,
     unit: null,
     note: null,
-    checked: false
+    checked: false,
   };
   let isSubmitting = false;
   let statusVariant: "accent" | "neutral" | "success" | "danger" = "neutral";
@@ -62,19 +65,21 @@
     try {
       list = await addShoppingListItem(list.id, {
         ...draftItem,
-        name: draftItem.name.trim()
+        name: draftItem.name.trim(),
       });
       draftItem = {
         name: "",
         amount: null,
         unit: null,
         note: null,
-        checked: false
+        checked: false,
       };
       message = $dictionary.shoppingLists.detail.itemAdded;
     } catch (error) {
       errorMessage =
-        error instanceof Error ? error.message : $dictionary.shoppingLists.detail.itemAddFailed;
+        error instanceof Error
+          ? error.message
+          : $dictionary.shoppingLists.detail.itemAddFailed;
     } finally {
       isSubmitting = false;
     }
@@ -96,6 +101,18 @@
   }
 </script>
 
+<svelte:head>
+  <title
+    >{formatMessage($dictionary.meta.shoppingListDetailTitle, {
+      name: list.name,
+    })}</title
+  >
+  <meta
+    name="description"
+    content={$dictionary.meta.shoppingListsDescription}
+  />
+</svelte:head>
+
 <div class={styles.page}>
   <PageIntro
     eyebrow={$dictionary.shoppingLists.detail.eyebrow}
@@ -105,7 +122,9 @@
       : $dictionary.shoppingLists.detail.descriptionReadOnly}
   >
     <div class={styles.badges}>
-      <Badge variant={statusVariant}>{formatShoppingListStatus(list.status)}</Badge>
+      <Badge variant={statusVariant}
+        >{formatShoppingListStatus(list.status)}</Badge
+      >
       <Badge variant={list.visibility === "public" ? "accent" : "neutral"}>
         {formatShoppingListVisibility(list.visibility)}
       </Badge>
@@ -126,23 +145,62 @@
 
         <form class={styles.grid} on:submit|preventDefault={handleAddItem}>
           <Field label={$dictionary.shoppingLists.detail.itemName}>
-            <Input value={draftItem.name ?? ""} placeholder={$dictionary.shoppingLists.detail.itemNamePlaceholder} on:input={(event) => (draftItem = { ...draftItem, name: getInputValue(event) })} />
+            <Input
+              value={draftItem.name ?? ""}
+              placeholder={$dictionary.shoppingLists.detail.itemNamePlaceholder}
+              on:input={(event) =>
+                (draftItem = { ...draftItem, name: getInputValue(event) })}
+            />
           </Field>
 
-          <Field label={$dictionary.shoppingLists.detail.amount} optional={true}>
-            <Input type="number" min={0} step="0.1" value={draftItem.amount ?? ""} placeholder={$dictionary.shoppingLists.detail.amountPlaceholder} on:input={(event) => (draftItem = { ...draftItem, amount: getInputValue(event) ? Number(getInputValue(event)) : null })} />
+          <Field
+            label={$dictionary.shoppingLists.detail.amount}
+            optional={true}
+          >
+            <Input
+              type="number"
+              min={0}
+              step="0.1"
+              value={draftItem.amount ?? ""}
+              placeholder={$dictionary.shoppingLists.detail.amountPlaceholder}
+              on:input={(event) =>
+                (draftItem = {
+                  ...draftItem,
+                  amount: getInputValue(event)
+                    ? Number(getInputValue(event))
+                    : null,
+                })}
+            />
           </Field>
 
           <Field label={$dictionary.shoppingLists.detail.unit} optional={true}>
-            <Input value={draftItem.unit ?? ""} placeholder={$dictionary.shoppingLists.detail.unitPlaceholder} on:input={(event) => (draftItem = { ...draftItem, unit: getInputValue(event) || null })} />
+            <Input
+              value={draftItem.unit ?? ""}
+              placeholder={$dictionary.shoppingLists.detail.unitPlaceholder}
+              on:input={(event) =>
+                (draftItem = {
+                  ...draftItem,
+                  unit: getInputValue(event) || null,
+                })}
+            />
           </Field>
 
           <Field label={$dictionary.shoppingLists.detail.note} optional={true}>
-            <Input value={draftItem.note ?? ""} placeholder={$dictionary.shoppingLists.detail.notePlaceholder} on:input={(event) => (draftItem = { ...draftItem, note: getInputValue(event) || null })} />
+            <Input
+              value={draftItem.note ?? ""}
+              placeholder={$dictionary.shoppingLists.detail.notePlaceholder}
+              on:input={(event) =>
+                (draftItem = {
+                  ...draftItem,
+                  note: getInputValue(event) || null,
+                })}
+            />
           </Field>
 
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? $dictionary.shoppingLists.detail.adding : $dictionary.shoppingLists.detail.addItem}
+            {isSubmitting
+              ? $dictionary.shoppingLists.detail.adding
+              : $dictionary.shoppingLists.detail.addItem}
           </Button>
         </form>
 
@@ -160,7 +218,7 @@
   <Card>
     <SectionHeader
       title={formatMessage($dictionary.shoppingLists.detail.itemsTitle, {
-        count: list.items.length
+        count: list.items.length,
       })}
       subtitle={$dictionary.shoppingLists.detail.itemsSubtitle}
     />

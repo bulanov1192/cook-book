@@ -6,6 +6,17 @@ const STORAGE_KEY = "recipe-book-locale";
 
 const messages = {
   en: {
+    meta: {
+      cookbookTitle: "Cook book",
+      cookbookDescription: "Make something delicious tonight!",
+      recipesListTitle: "Recipes list",
+      recipesListDescription: "List of your best recipes",
+      newRecipeTitle: "New recipe",
+      newRecipeDescription: "Create your masterpiece!",
+      shoppingListsTitle: "Shopping lists",
+      shoppingListsDescription: "Your grocery shopping plans",
+      shoppingListDetailTitle: "{name} | Shopping lists",
+    },
     common: {
       language: "Language",
       guestMode: "Guest mode",
@@ -366,6 +377,18 @@ const messages = {
     },
   },
   ru: {
+    meta: {
+      cookbookTitle: "Кулинарная книга",
+      cookbookDescription: "Приготовь что-нибудь вкусное сегодня!",
+      recipesListTitle: "Список рецептов",
+      recipesListDescription:
+        "Найди что-нибудь особенное для следующего ужина или просто полистай коллекцию, чтобы вдохновиться.",
+      newRecipeTitle: "Новый рецепт",
+      newRecipeDescription: "Создай свой шедевр!",
+      shoppingListsTitle: "Списки покупок",
+      shoppingListsDescription: "Твои планы по закупкам",
+      shoppingListDetailTitle: "{name} | Списки покупок",
+    },
     common: {
       language: "Язык",
       guestMode: "Гостевой режим",

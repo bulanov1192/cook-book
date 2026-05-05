@@ -102,6 +102,11 @@
   }
 </script>
 
+<svelte:head>
+  <title>{$dictionary.meta.recipesListTitle}</title>
+  <meta name="description" content={$dictionary.meta.recipesListDescription} />
+</svelte:head>
+
 <div class={styles.page}>
   <PageIntro
     eyebrow={$dictionary.recipes.pageEyebrow}

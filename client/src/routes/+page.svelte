@@ -20,6 +20,11 @@
   };
 </script>
 
+<svelte:head>
+  <title>{$dictionary.meta.cookbookTitle}</title>
+  <meta name="description" content={$dictionary.meta.cookbookDescription} />
+</svelte:head>
+
 <div class={styles.page}>
   <PageIntro
     eyebrow={$dictionary.dashboard.eyebrow}
@@ -30,16 +35,32 @@
   >
     {#if data.session.isAuthenticated}
       <Button href="/recipes/new">{$dictionary.dashboard.addRecipe}</Button>
-      <Button href="/shopping-lists" variant="secondary">{$dictionary.dashboard.openShoppingLists}</Button>
+      <Button href="/shopping-lists" variant="secondary"
+        >{$dictionary.dashboard.openShoppingLists}</Button
+      >
     {:else}
-      <Button href="/recipes">{$dictionary.dashboard.browsePublicRecipes}</Button>
+      <Button href="/recipes"
+        >{$dictionary.dashboard.browsePublicRecipes}</Button
+      >
     {/if}
   </PageIntro>
 
   <section class={styles.stats}>
-    <StatCard label={$dictionary.nav.recipes} value={String(data.recipeCount)} hint={$dictionary.dashboard.recipesHint} />
-    <StatCard label={$dictionary.recipes.status.published} value={String(data.publishedRecipeCount)} hint={$dictionary.dashboard.publishedHint} />
-    <StatCard label={$dictionary.nav.shoppingLists} value={String(data.shoppingListCount)} hint={$dictionary.dashboard.listsHint} />
+    <StatCard
+      label={$dictionary.nav.recipes}
+      value={String(data.recipeCount)}
+      hint={$dictionary.dashboard.recipesHint}
+    />
+    <StatCard
+      label={$dictionary.recipes.status.published}
+      value={String(data.publishedRecipeCount)}
+      hint={$dictionary.dashboard.publishedHint}
+    />
+    <StatCard
+      label={$dictionary.nav.shoppingLists}
+      value={String(data.shoppingListCount)}
+      hint={$dictionary.dashboard.listsHint}
+    />
   </section>
 
   <section class="page-grid">
@@ -47,7 +68,9 @@
       title={$dictionary.dashboard.recentRecipesTitle}
       subtitle={$dictionary.dashboard.recentRecipesSubtitle}
     >
-      <Button href="/recipes" variant="secondary">{$dictionary.nav.recipes}</Button>
+      <Button href="/recipes" variant="secondary"
+        >{$dictionary.nav.recipes}</Button
+      >
     </SectionHeader>
 
     {#if data.recentRecipes.length}
@@ -72,7 +95,9 @@
         title={$dictionary.dashboard.shoppingListsTitle}
         subtitle={$dictionary.dashboard.shoppingListsSubtitle}
       >
-        <Button href="/shopping-lists" variant="secondary">{$dictionary.nav.shoppingLists}</Button>
+        <Button href="/shopping-lists" variant="secondary"
+          >{$dictionary.nav.shoppingLists}</Button
+        >
       </SectionHeader>
 
       {#if data.shoppingLists.length}
@@ -86,7 +111,9 @@
           title={$dictionary.dashboard.noListsTitle}
           description={$dictionary.dashboard.noListsDescription}
         >
-          <Button href="/shopping-lists">{$dictionary.shoppingLists.create}</Button>
+          <Button href="/shopping-lists"
+            >{$dictionary.shoppingLists.create}</Button
+          >
         </EmptyState>
       {/if}
     {:else}
