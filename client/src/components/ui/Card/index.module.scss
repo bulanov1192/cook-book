@@ -5,6 +5,12 @@
   box-shadow: var(--shadow-soft);
 }
 
+.card--transparent {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
 .md {
   padding: 1.35rem;
 }

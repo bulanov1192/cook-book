@@ -1,5 +1,5 @@
 import { browser } from "$app/environment";
-import type { SessionResponse, Locale } from "$lib/api/types";
+import type { Locale, SessionResponse } from "$lib/api/types";
 import { derived, get, writable } from "svelte/store";
 
 const STORAGE_KEY = "recipe-book-locale";
@@ -28,7 +28,7 @@ const messages = {
       active: "Active",
       archived: "Archived",
       loading: "Loading...",
-      notSet: "Not set"
+      notSet: "Not set",
     },
     nav: {
       mainNavigation: "Main navigation",
@@ -39,7 +39,7 @@ const messages = {
       shoppingLists: "Shopping Lists",
       shoppingListsHint: "Plan and track ingredients",
       newRecipe: "New Recipe",
-      newRecipeHint: "Add something fresh"
+      newRecipeHint: "Add something fresh",
     },
     shell: {
       eyebrow: "Recipe book",
@@ -50,7 +50,7 @@ const messages = {
       ctaCopy:
         "Start with a rough version, polish it when the details settle, and turn the ingredient list into a real shopping plan when it is time to cook.",
       guestCopy:
-        "Public recipes and shared lists stay open. Sign in when you want a private space for your own kitchen memory."
+        "Public recipes and shared lists stay open. Sign in when you want a private space for your own kitchen memory.",
     },
     auth: {
       defaultTitle: "Sign in to continue",
@@ -65,7 +65,7 @@ const messages = {
       namePlaceholder: "Kitchen owner",
       emailPlaceholder: "chef@example.com",
       passwordHint: "Use at least 8 characters.",
-      authFailed: "Authentication failed."
+      authFailed: "Authentication failed.",
     },
     dashboard: {
       eyebrow: "Kitchen overview",
@@ -81,7 +81,8 @@ const messages = {
       publishedHint: "Recipes ready to cook again and again",
       listsHint: "Plans already turned into ingredients",
       recentRecipesTitle: "Recent recipes",
-      recentRecipesSubtitle: "The dishes and notes you were shaping most recently.",
+      recentRecipesSubtitle:
+        "The dishes and notes you were shaping most recently.",
       noRecipesTitle: "No recipes yet",
       noRecipesDescription:
         "Start with one recipe you actually return to. Once it lives here, the rest of the collection tends to grow naturally around it.",
@@ -93,7 +94,7 @@ const messages = {
         "The first list usually appears the moment a recipe turns into an actual meal plan.",
       signInTitle: "Sign in for your own kitchen workspace",
       signInDescription:
-        "Public recipes are open for browsing. Signing in turns the app into your own kitchen notebook, with private drafts, editable recipes and lists that stay yours."
+        "Public recipes are open for browsing. Signing in turns the app into your own kitchen notebook, with private drafts, editable recipes and lists that stay yours.",
     },
     recipes: {
       pageEyebrow: "Recipe catalog",
@@ -129,13 +130,13 @@ const messages = {
         title: "Title",
         totalTime: "Total time",
         descending: "Descending",
-        ascending: "Ascending"
+        ascending: "Ascending",
       },
       status: {
         draft: "Draft",
         published: "Published",
         private: "Private",
-        archived: "Archived"
+        archived: "Archived",
       },
       form: {
         coreDetails: "Core details",
@@ -154,14 +155,15 @@ const messages = {
         description: "Description",
         descriptionPlaceholder: "A warm, fast dinner with pantry staples.",
         notes: "Notes",
-        notesPlaceholder: "Any serving notes, substitutions or kitchen reminders.",
+        notesPlaceholder:
+          "Any serving notes, substitutions or kitchen reminders.",
         ingredients: "Ingredients",
         method: "Method",
         saveRecipe: "Save recipe",
         saveChanges: "Save changes",
         saving: "Saving...",
         cancel: "Cancel",
-        couldNotSave: "Could not save recipe."
+        couldNotSave: "Could not save recipe.",
       },
       create: {
         eyebrow: "Create recipe",
@@ -170,13 +172,13 @@ const messages = {
           "Capture the version you cook today. You can always come back later to clarify the method, tighten the ingredients and turn it into something you trust.",
         authTitle: "Sign in before creating a recipe",
         authDescription:
-          "New recipes begin in your own space, so this step needs a signed-in account before anything is saved."
+          "New recipes begin in your own space, so this step needs a signed-in account before anything is saved.",
       },
       edit: {
         eyebrow: "Edit recipe",
         title: "Refine {title}",
         description:
-          "Tighten the details, add what was missing, and leave the recipe in a better state than the last time you cooked it."
+          "Tighten the details, add what was missing, and leave the recipe in a better state than the last time you cooked it.",
       },
       detail: {
         eyebrow: "Recipe detail",
@@ -201,7 +203,8 @@ const messages = {
         recipeScore: "Recipe score",
         likes: "Likes: {count}",
         dislikes: "Dislikes: {count}",
-        voteHintSignedIn: "Use the buttons to recommend the recipe or vote it down.",
+        voteHintSignedIn:
+          "Use the buttons to recommend the recipe or vote it down.",
         voteHintGuest: "Sign in to vote for the recipe.",
         voteFailed: "Could not update the recipe score.",
         sendToListTitle: "Send to shopping list",
@@ -221,12 +224,24 @@ const messages = {
           "No extra notes yet, but there is room here for serving ideas, substitutions and the little things worth remembering.",
         optionalIngredient: "optional",
         commentsTitle: "Comments",
-        commentsSubtitle: "{count} replies around this recipe",
+        commentsSubtitle:
+          "Comments from cooks who have tried the recipe, or just want to share their thoughts.",
         commentFieldLabel: "Add your take",
-        commentPlaceholder: "What worked, what you changed, or what made the recipe worth saving?",
+        commentPlaceholder:
+          "Thoughts, feedback, experience, anything you want to say about the recipe.",
         commentSubmit: "Post comment",
         commentSubmitting: "Posting...",
         commentGuestNote: "Sign in to join the discussion around this recipe.",
+        replyFieldLabel: "Write a reply",
+        replyPlaceholder:
+          "Write a reply that keeps the conversation going and doesn't go off-topic.",
+        replySubmitting: "Sending reply...",
+        replyAction: "Reply",
+        loadReplies: "Load replies ({count})",
+        loadMoreReplies: "Load more replies",
+        repliesLoading: "Loading replies...",
+        deletedComment: "[comment deleted]",
+        emojiPicker: "Open emoji picker",
         commentEdited: "edited",
         commentSaving: "Saving...",
         commentDeleting: "Removing...",
@@ -239,7 +254,8 @@ const messages = {
         commentsLoadFailed: "Could not load more comments.",
         commentsLoadingMore: "Loading more comments...",
         commentsLoadingHint: "More comments will appear as you scroll.",
-        noComments: "No comments yet. Be the first to say whether the recipe delivered."
+        noComments:
+          "No comments yet. Be the first to say whether the recipe delivered.",
       },
       ingredientsEditor: {
         itemTitle: "Ingredient {index}",
@@ -252,13 +268,13 @@ const messages = {
         namePlaceholder: "Tomatoes",
         amountPlaceholder: "400",
         unitPlaceholder: "g",
-        prepPlaceholder: "chopped"
+        prepPlaceholder: "chopped",
       },
       stepsEditor: {
         itemTitle: "Step {index}",
         instruction: "Instruction",
         instructionPlaceholder: "Describe the action clearly",
-        add: "Add step"
+        add: "Add step",
       },
       card: {
         updated: "Updated {date}",
@@ -272,8 +288,8 @@ const messages = {
         ingredients: "Ingredients",
         steps: "Steps",
         open: "Open recipe",
-        edit: "Edit"
-      }
+        edit: "Edit",
+      },
     },
     shoppingLists: {
       pageEyebrow: "Shopping lists",
@@ -329,24 +345,25 @@ const messages = {
         addItem: "Add item",
         adding: "Adding...",
         itemsTitle: "Items: {count}",
-        itemsSubtitle: "Mark things off as you shop, or trim the list as plans change.",
+        itemsSubtitle:
+          "Mark things off as you shop, or trim the list as plans change.",
         emptyTitle: "This shopping list is empty",
         emptyDescription:
           "Add a few essentials by hand, or pull ingredients in from a recipe to give this list a real purpose.",
         markActive: "Mark active",
-        markDone: "Mark done"
+        markDone: "Mark done",
       },
       importPanel: {
         label: "Import ingredients from a recipe",
         hint: "Pick a recipe and copy all its ingredient lines into this list.",
         import: "Import",
-        importing: "Importing..."
+        importing: "Importing...",
       },
       card: {
         updated: "Updated {date} · {count} items · {visibility}",
-        open: "Open list"
-      }
-    }
+        open: "Open list",
+      },
+    },
   },
   ru: {
     common: {
@@ -371,7 +388,7 @@ const messages = {
       active: "Активный",
       archived: "В архиве",
       loading: "Загрузка...",
-      notSet: "Не указано"
+      notSet: "Не указано",
     },
     nav: {
       mainNavigation: "Главная навигация",
@@ -382,7 +399,7 @@ const messages = {
       shoppingLists: "Списки покупок",
       shoppingListsHint: "Планирование ингредиентов",
       newRecipe: "Новый рецепт",
-      newRecipeHint: "Добавить что-то новое"
+      newRecipeHint: "Добавить что-то новое",
     },
     shell: {
       eyebrow: "Книга рецептов",
@@ -393,7 +410,7 @@ const messages = {
       ctaCopy:
         "Запиши рецепт как есть, потом уточни детали и в нужный момент преврати ингредиенты в готовый список покупок.",
       guestCopy:
-        "Публичные рецепты и общие списки открыты всем. Войди, если хочешь личное пространство для своей кухни."
+        "Публичные рецепты и общие списки открыты всем. Войди, если хочешь личное пространство для своей кухни.",
     },
     auth: {
       defaultTitle: "Войдите, чтобы продолжить",
@@ -408,7 +425,7 @@ const messages = {
       namePlaceholder: "Хозяин кухни",
       emailPlaceholder: "chef@example.com",
       passwordHint: "Используй минимум 8 символов.",
-      authFailed: "Не удалось выполнить вход."
+      authFailed: "Не удалось выполнить вход.",
     },
     dashboard: {
       eyebrow: "Кухонный обзор",
@@ -429,13 +446,14 @@ const messages = {
       noRecipesDescription:
         "Начни с одного проверенного рецепта. Дальше коллекция обычно складывается сама.",
       shoppingListsTitle: "Списки покупок",
-      shoppingListsSubtitle: "Простое место, где ингредиенты превращаются в понятный план.",
+      shoppingListsSubtitle:
+        "Простое место, где ингредиенты превращаются в понятный план.",
       noListsTitle: "Списков покупок пока нет",
       noListsDescription:
         "Обычно первый список появляется сам, когда рецепт превращается в реальный ужин.",
       signInTitle: "Войди в свое кухонное пространство",
       signInDescription:
-        "Публичные рецепты можно смотреть и без входа. После входа приложение становится твоей личной кулинарной тетрадью."
+        "Публичные рецепты можно смотреть и без входа. После входа приложение становится твоей личной кулинарной тетрадью.",
     },
     recipes: {
       pageEyebrow: "Каталог рецептов",
@@ -471,13 +489,13 @@ const messages = {
         title: "Название",
         totalTime: "Общее время",
         descending: "По убыванию",
-        ascending: "По возрастанию"
+        ascending: "По возрастанию",
       },
       status: {
         draft: "Черновик",
         published: "Опубликован",
         private: "Приватный",
-        archived: "В архиве"
+        archived: "В архиве",
       },
       form: {
         coreDetails: "Основные детали",
@@ -496,14 +514,15 @@ const messages = {
         description: "Описание",
         descriptionPlaceholder: "Теплый быстрый ужин из простых ингредиентов.",
         notes: "Заметки",
-        notesPlaceholder: "Подача, замены ингредиентов или кухонные напоминания.",
+        notesPlaceholder:
+          "Подача, замены ингредиентов или кухонные напоминания.",
         ingredients: "Ингредиенты",
         method: "Способ приготовления",
         saveRecipe: "Сохранить рецепт",
         saveChanges: "Сохранить изменения",
         saving: "Сохраняем...",
         cancel: "Отмена",
-        couldNotSave: "Не удалось сохранить рецепт."
+        couldNotSave: "Не удалось сохранить рецепт.",
       },
       create: {
         eyebrow: "Создание рецепта",
@@ -512,13 +531,13 @@ const messages = {
           "Запиши ту версию, которую готовишь сегодня. Позже всегда можно вернуться, уточнить шаги и довести рецепт до уверенного состояния.",
         authTitle: "Войди перед созданием рецепта",
         authDescription:
-          "Новые рецепты сохраняются в твоем личном пространстве, поэтому сначала нужно войти."
+          "Новые рецепты сохраняются в твоем личном пространстве, поэтому сначала нужно войти.",
       },
       edit: {
         eyebrow: "Редактирование рецепта",
         title: "Доработать {title}",
         description:
-          "Подправь детали, добавь недостающее и оставь рецепт лучше, чем он был до этого."
+          "Подправь детали, добавь недостающее и оставь рецепт лучше, чем он был до этого.",
       },
       detail: {
         eyebrow: "Рецепт",
@@ -543,7 +562,8 @@ const messages = {
         recipeScore: "Оценка рецепта",
         likes: "Лайков: {count}",
         dislikes: "Дизлайков: {count}",
-        voteHintSignedIn: "Поддержи рецепт или занеси его в минус, если не зашел.",
+        voteHintSignedIn:
+          "Поддержи рецепт или занеси его в минус, если не зашел.",
         voteHintGuest: "Войди, чтобы голосовать за рецепт.",
         voteFailed: "Не удалось обновить оценку рецепта.",
         sendToListTitle: "Отправить в список покупок",
@@ -553,7 +573,8 @@ const messages = {
         addIngredients: "Добавить ингредиенты",
         importing: "Импортируем...",
         ingredientsTitle: "Ингредиенты",
-        ingredientsSubtitle: "{count} ингредиентов, которые стоит собрать заранее",
+        ingredientsSubtitle:
+          "{count} ингредиентов, которые стоит собрать заранее",
         methodTitle: "Способ приготовления",
         methodSubtitle: "{count} шагов от подготовки до подачи",
         notesTagsTitle: "Заметки и теги",
@@ -563,12 +584,24 @@ const messages = {
           "Заметок пока нет, но сюда удобно складывать идеи по подаче, замены и мелочи, которые хочется не забыть.",
         optionalIngredient: "необязательно",
         commentsTitle: "Комментарии",
-        commentsSubtitle: "Обсуждение: {count}",
+        commentsSubtitle:
+          "Комментарии от тех, кто уже пробовал рецепт, или просто хочет поделиться мыслями.",
         commentFieldLabel: "Добавить комментарий",
-        commentPlaceholder: "Что получилось, что ты поменял и стоит ли к рецепту вернуться снова?",
+        commentPlaceholder:
+          "Мысли, отзыв, опыт, всё, что хочешь сказать о рецепте.",
         commentSubmit: "Отправить комментарий",
         commentSubmitting: "Отправляем...",
         commentGuestNote: "Войди, чтобы участвовать в обсуждении рецепта.",
+        replyFieldLabel: "Написать ответ",
+        replyPlaceholder:
+          "Напиши ответ, который поддержит разговор и не уйдет в оффтоп.",
+        replySubmitting: "Отправляем ответ...",
+        replyAction: "Ответить",
+        loadReplies: "Загрузить ответы ({count})",
+        loadMoreReplies: "Загрузить еще ответы",
+        repliesLoading: "Подгружаем ответы...",
+        deletedComment: "[комментарий удален]",
+        emojiPicker: "Открыть выбор эмоджи",
         commentEdited: "изменен",
         commentSaving: "Сохраняем...",
         commentDeleting: "Удаляем...",
@@ -580,8 +613,10 @@ const messages = {
         commentDeleteFailed: "Не удалось удалить комментарий.",
         commentsLoadFailed: "Не удалось подгрузить еще комментарии.",
         commentsLoadingMore: "Подгружаем еще комментарии...",
-        commentsLoadingHint: "Следующие комментарии появятся по мере прокрутки.",
-        noComments: "Комментариев пока нет. Можно первым сказать, как рецепт себя показал."
+        commentsLoadingHint:
+          "Следующие комментарии появятся по мере прокрутки.",
+        noComments:
+          "Комментариев пока нет. Можно первым сказать, как рецепт себя показал.",
       },
       ingredientsEditor: {
         itemTitle: "Ингредиент {index}",
@@ -594,13 +629,13 @@ const messages = {
         namePlaceholder: "Томаты",
         amountPlaceholder: "400",
         unitPlaceholder: "г",
-        prepPlaceholder: "нарезать"
+        prepPlaceholder: "нарезать",
       },
       stepsEditor: {
         itemTitle: "Шаг {index}",
         instruction: "Инструкция",
         instructionPlaceholder: "Опиши действие понятно и спокойно",
-        add: "Добавить шаг"
+        add: "Добавить шаг",
       },
       card: {
         updated: "Обновлен {date}",
@@ -614,8 +649,8 @@ const messages = {
         ingredients: "Ингредиенты",
         steps: "Шаги",
         open: "Открыть рецепт",
-        edit: "Редактировать"
-      }
+        edit: "Редактировать",
+      },
     },
     shoppingLists: {
       pageEyebrow: "Списки покупок",
@@ -671,25 +706,26 @@ const messages = {
         addItem: "Добавить пункт",
         adding: "Добавляем...",
         itemsTitle: "Пунктов: {count}",
-        itemsSubtitle: "Отмечай купленное и держи список в порядке по мере изменений.",
+        itemsSubtitle:
+          "Отмечай купленное и держи список в порядке по мере изменений.",
         emptyTitle: "Этот список пока пуст",
         emptyDescription:
           "Добавь несколько позиций вручную или подтяни ингредиенты из рецепта, чтобы список сразу ожил.",
         markActive: "Сделать активным",
-        markDone: "Отметить как купленное"
+        markDone: "Отметить как купленное",
       },
       importPanel: {
         label: "Импортировать ингредиенты из рецепта",
         hint: "Выбери рецепт и добавь все его ингредиенты в этот список.",
         import: "Импортировать",
-        importing: "Импортируем..."
+        importing: "Импортируем...",
       },
       card: {
         updated: "Обновлен {date} · {count} поз. · {visibility}",
-        open: "Открыть список"
-      }
-    }
-  }
+        open: "Открыть список",
+      },
+    },
+  },
 } as const;
 
 export type TranslationDictionary = (typeof messages)[keyof typeof messages];
@@ -701,8 +737,13 @@ function isLocale(value: string | null | undefined): value is Locale {
   return value === "en" || value === "ru";
 }
 
-export function formatMessage(template: string, values: Record<string, string | number>) {
-  return template.replace(/\{(\w+)\}/g, (_match, key) => String(values[key] ?? ""));
+export function formatMessage(
+  template: string,
+  values: Record<string, string | number>,
+) {
+  return template.replace(/\{(\w+)\}/g, (_match, key) =>
+    String(values[key] ?? ""),
+  );
 }
 
 export function getDictionary(): TranslationDictionary {

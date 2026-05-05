@@ -18,7 +18,9 @@
 
   function updateStep(index: number, instruction: string) {
     onChange(
-      steps.map((step, stepIndex) => (stepIndex === index ? { ...step, instruction } : step))
+      steps.map((step, stepIndex) =>
+        stepIndex === index ? { ...step, instruction } : step,
+      ),
     );
   }
 
@@ -33,13 +35,20 @@
 
 <div class={styles.stack}>
   {#each steps as step, index}
-    <Card padding="md">
+    <Card transparent padding="md">
       <div class={styles.item}>
         <div class={styles.header}>
           <h3 class={styles.title}>
-            {formatMessage($dictionary.recipes.stepsEditor.itemTitle, { index: index + 1 })}
+            {formatMessage($dictionary.recipes.stepsEditor.itemTitle, {
+              index: index + 1,
+            })}
           </h3>
-          <Button variant="ghost" size="sm" on:click={() => removeStep(index)} disabled={steps.length === 1}>
+          <Button
+            variant="ghost"
+            size="sm"
+            on:click={() => removeStep(index)}
+            disabled={steps.length === 1}
+          >
             {$dictionary.common.remove}
           </Button>
         </div>
@@ -56,5 +65,7 @@
     </Card>
   {/each}
 
-  <Button variant="secondary" on:click={addStep}>{$dictionary.recipes.stepsEditor.add}</Button>
+  <Button variant="secondary" on:click={addStep}
+    >{$dictionary.recipes.stepsEditor.add}</Button
+  >
 </div>

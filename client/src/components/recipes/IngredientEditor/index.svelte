@@ -24,7 +24,7 @@
 
   function updateIngredient(index: number, patch: Partial<IngredientDraft>) {
     const nextValue = ingredients.map((ingredient, ingredientIndex) =>
-      ingredientIndex === index ? { ...ingredient, ...patch } : ingredient
+      ingredientIndex === index ? { ...ingredient, ...patch } : ingredient,
     );
 
     onChange(nextValue);
@@ -35,19 +35,30 @@
   }
 
   function removeIngredient(index: number) {
-    onChange(ingredients.filter((_ingredient, ingredientIndex) => ingredientIndex !== index));
+    onChange(
+      ingredients.filter(
+        (_ingredient, ingredientIndex) => ingredientIndex !== index,
+      ),
+    );
   }
 </script>
 
 <div class={styles.stack}>
   {#each ingredients as ingredient, index}
-    <Card padding="md">
+    <Card transparent padding="md">
       <div class={styles.card}>
         <div class={styles.header}>
           <h3 class={styles.title}>
-            {formatMessage($dictionary.recipes.ingredientsEditor.itemTitle, { index: index + 1 })}
+            {formatMessage($dictionary.recipes.ingredientsEditor.itemTitle, {
+              index: index + 1,
+            })}
           </h3>
-          <Button variant="ghost" size="sm" on:click={() => removeIngredient(index)} disabled={ingredients.length === 1}>
+          <Button
+            variant="ghost"
+            size="sm"
+            on:click={() => removeIngredient(index)}
+            disabled={ingredients.length === 1}
+          >
             {$dictionary.common.remove}
           </Button>
         </div>
@@ -56,36 +67,54 @@
           <Field label={$dictionary.recipes.ingredientsEditor.name}>
             <Input
               value={ingredient.name}
-              placeholder={$dictionary.recipes.ingredientsEditor.namePlaceholder}
-              on:input={(event) => updateIngredient(index, { name: getInputValue(event) })}
+              placeholder={$dictionary.recipes.ingredientsEditor
+                .namePlaceholder}
+              on:input={(event) =>
+                updateIngredient(index, { name: getInputValue(event) })}
             />
           </Field>
 
-          <Field label={$dictionary.recipes.ingredientsEditor.amount} optional={true}>
+          <Field
+            label={$dictionary.recipes.ingredientsEditor.amount}
+            optional={true}
+          >
             <Input
               type="number"
               min={0}
               step="0.1"
               value={ingredient.amount}
-              placeholder={$dictionary.recipes.ingredientsEditor.amountPlaceholder}
-              on:input={(event) => updateIngredient(index, { amount: getInputValue(event) })}
+              placeholder={$dictionary.recipes.ingredientsEditor
+                .amountPlaceholder}
+              on:input={(event) =>
+                updateIngredient(index, { amount: getInputValue(event) })}
             />
           </Field>
 
-          <Field label={$dictionary.recipes.ingredientsEditor.unit} optional={true}>
+          <Field
+            label={$dictionary.recipes.ingredientsEditor.unit}
+            optional={true}
+          >
             <Input
               value={ingredient.unit}
-              placeholder={$dictionary.recipes.ingredientsEditor.unitPlaceholder}
-              on:input={(event) => updateIngredient(index, { unit: getInputValue(event) })}
+              placeholder={$dictionary.recipes.ingredientsEditor
+                .unitPlaceholder}
+              on:input={(event) =>
+                updateIngredient(index, { unit: getInputValue(event) })}
             />
           </Field>
 
-          <Field label={$dictionary.recipes.ingredientsEditor.prepNote} optional={true}>
+          <Field
+            label={$dictionary.recipes.ingredientsEditor.prepNote}
+            optional={true}
+          >
             <Input
               value={ingredient.preparationNote}
-              placeholder={$dictionary.recipes.ingredientsEditor.prepPlaceholder}
+              placeholder={$dictionary.recipes.ingredientsEditor
+                .prepPlaceholder}
               on:input={(event) =>
-                updateIngredient(index, { preparationNote: getInputValue(event) })}
+                updateIngredient(index, {
+                  preparationNote: getInputValue(event),
+                })}
             />
           </Field>
         </div>
@@ -93,7 +122,8 @@
         <Checkbox
           checked={ingredient.optional}
           label={$dictionary.recipes.ingredientsEditor.optional}
-          on:change={(event) => updateIngredient(index, { optional: getCheckedValue(event) })}
+          on:change={(event) =>
+            updateIngredient(index, { optional: getCheckedValue(event) })}
         />
       </div>
     </Card>

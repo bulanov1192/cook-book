@@ -1,6 +1,5 @@
 <script lang="ts">
   import { browser } from "$app/environment";
-  import { onMount } from "svelte";
   import PageIntro from "$components/layout/PageIntro/index.svelte";
   import RecipeCard from "$components/recipes/RecipeCard/index.svelte";
   import RecipeFilters from "$components/recipes/RecipeFilters/index.svelte";
@@ -9,6 +8,7 @@
   import SectionHeader from "$components/ui/SectionHeader/index.svelte";
   import { listRecipes } from "$lib/api/recipes";
   import { dictionary, formatMessage } from "$lib/i18n";
+  import { onMount } from "svelte";
   import styles from "./+page.module.scss";
 
   export let data: {
@@ -32,6 +32,11 @@
   let sentinel: HTMLDivElement | null = null;
   let observer: IntersectionObserver | null = null;
 
+  $: if (data.recipes) {
+    recipes = data.recipes.items;
+    meta = data.recipes.meta;
+  }
+
   $: hasMore = recipes.length < meta.total;
 
   async function loadMoreRecipes() {
@@ -46,14 +51,16 @@
       const nextPage = await listRecipes(fetch, {
         ...data.filters,
         limit: 50,
-        offset: recipes.length
+        offset: recipes.length,
       });
 
       recipes = [...recipes, ...nextPage.items];
       meta = nextPage.meta;
     } catch (error) {
       loadMoreError =
-        error instanceof Error ? error.message : $dictionary.recipes.loadMoreFailed;
+        error instanceof Error
+          ? error.message
+          : $dictionary.recipes.loadMoreFailed;
     } finally {
       isLoadingMore = false;
     }
@@ -75,8 +82,8 @@
         }
       },
       {
-        rootMargin: "320px 0px"
-      }
+        rootMargin: "320px 0px",
+      },
     );
 
     observer.observe(sentinel);
@@ -104,11 +111,17 @@
     <Button href="/recipes/new">{$dictionary.recipes.createRecipe}</Button>
   </PageIntro>
 
-  <RecipeFilters values={data.filters} categories={data.categories} tags={data.tags} />
+  <RecipeFilters
+    values={data.filters}
+    categories={data.categories}
+    tags={data.tags}
+  />
 
   <section class="page-grid">
     <SectionHeader
-      title={formatMessage($dictionary.recipes.foundTitle, { count: meta.total })}
+      title={formatMessage($dictionary.recipes.foundTitle, {
+        count: meta.total,
+      })}
       subtitle={$dictionary.recipes.foundSubtitle}
     />
 

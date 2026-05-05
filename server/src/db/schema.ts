@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  type AnyPgColumn,
   boolean,
   doublePrecision,
   index,
@@ -172,11 +173,28 @@ export const recipeComments = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     body: text("body").notNull(),
+    parentCommentId: text("parent_comment_id").references((): AnyPgColumn => recipeComments.id, {
+      onDelete: "set null"
+    }),
+    rootCommentId: text("root_comment_id")
+      .notNull()
+      .references((): AnyPgColumn => recipeComments.id, { onDelete: "cascade" }),
+    depth: integer("depth").notNull().default(0),
+    replyCount: integer("reply_count").notNull().default(0),
+    score: integer("score").notNull().default(0),
+    deletedAt: text("deleted_at"),
     createdAt: text("created_at").notNull(),
     updatedAt: text("updated_at").notNull()
   },
   (table) => ({
     recipeCreatedIdx: index("recipe_comments_recipe_created_idx").on(table.recipeId, table.createdAt),
+    recipeParentCreatedIdx: index("recipe_comments_recipe_parent_created_idx").on(
+      table.recipeId,
+      table.parentCommentId,
+      table.createdAt
+    ),
+    rootCreatedIdx: index("recipe_comments_root_created_idx").on(table.rootCommentId, table.createdAt),
+    parentIdx: index("recipe_comments_parent_idx").on(table.parentCommentId),
     authorIdx: index("recipe_comments_author_idx").on(table.authorId)
   })
 );
@@ -314,7 +332,7 @@ export const recipeVoteRelations = relations(recipeVotes, ({ one }) => ({
   })
 }));
 
-export const recipeCommentRelations = relations(recipeComments, ({ one }) => ({
+export const recipeCommentRelations = relations(recipeComments, ({ many, one }) => ({
   recipe: one(recipes, {
     fields: [recipeComments.recipeId],
     references: [recipes.id]
@@ -322,6 +340,22 @@ export const recipeCommentRelations = relations(recipeComments, ({ one }) => ({
   author: one(user, {
     fields: [recipeComments.authorId],
     references: [user.id]
+  }),
+  parent: one(recipeComments, {
+    fields: [recipeComments.parentCommentId],
+    references: [recipeComments.id],
+    relationName: "recipe_comment_parent"
+  }),
+  root: one(recipeComments, {
+    fields: [recipeComments.rootCommentId],
+    references: [recipeComments.id],
+    relationName: "recipe_comment_root"
+  }),
+  replies: many(recipeComments, {
+    relationName: "recipe_comment_parent"
+  }),
+  threadComments: many(recipeComments, {
+    relationName: "recipe_comment_root"
   })
 }));
 

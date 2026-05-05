@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createRecipeCommentHandler,
   deleteRecipeCommentHandler,
+  listRecipeCommentRepliesHandler,
   listRecipeCommentsHandler,
   updateRecipeCommentHandler
 } from "../recipe-comments/recipe-comment.controller.js";
@@ -33,6 +34,7 @@ recipeRouter.put("/:id/vote", asyncHandler(setRecipeVoteHandler));
 recipeRouter.delete("/:id/vote", asyncHandler(clearRecipeVoteHandler));
 recipeRouter.get("/:id/comments", asyncHandler(listRecipeCommentsHandler));
 recipeRouter.post("/:id/comments", asyncHandler(createRecipeCommentHandler));
+recipeRouter.get("/:id/comments/:commentId/replies", asyncHandler(listRecipeCommentRepliesHandler));
 recipeRouter.patch("/:id/comments/:commentId", asyncHandler(updateRecipeCommentHandler));
 recipeRouter.delete("/:id/comments/:commentId", asyncHandler(deleteRecipeCommentHandler));
 recipeRouter.post("/", asyncHandler(createRecipeHandler));

@@ -1,4 +1,8 @@
-import type { RecipeStatus, ShoppingListStatus, ShoppingListVisibility } from "$lib/api/types";
+import type {
+  RecipeStatus,
+  ShoppingListStatus,
+  ShoppingListVisibility,
+} from "$lib/api/types";
 import { getCurrentLocale, getDictionary } from "$lib/i18n";
 
 export function formatMinutes(minutes: number | null): string {
@@ -24,7 +28,9 @@ export function formatDate(dateValue: string): string {
   return new Intl.DateTimeFormat(locale, {
     month: "short",
     day: "numeric",
-    year: "numeric"
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   }).format(new Date(dateValue));
 }
 
@@ -48,15 +54,25 @@ export function formatRecipeStatus(status: RecipeStatus): string {
 
 export function formatShoppingListStatus(status: ShoppingListStatus): string {
   const dictionary = getDictionary();
-  return status === "active" ? dictionary.common.active : dictionary.common.archived;
+  return status === "active"
+    ? dictionary.common.active
+    : dictionary.common.archived;
 }
 
-export function formatShoppingListVisibility(visibility: ShoppingListVisibility): string {
+export function formatShoppingListVisibility(
+  visibility: ShoppingListVisibility,
+): string {
   const dictionary = getDictionary();
-  return visibility === "public" ? dictionary.common.public : dictionary.common.private;
+  return visibility === "public"
+    ? dictionary.common.public
+    : dictionary.common.private;
 }
 
-export function formatIngredientLine(amount: number | null, unit: string | null, name: string): string {
+export function formatIngredientLine(
+  amount: number | null,
+  unit: string | null,
+  name: string,
+): string {
   const amountPart = amount ? `${amount}` : "";
   const unitPart = unit ?? "";
   return [amountPart, unitPart, name].filter(Boolean).join(" ");

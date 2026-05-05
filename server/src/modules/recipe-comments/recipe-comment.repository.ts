@@ -1,10 +1,7 @@
-import { count, desc, eq, inArray } from "drizzle-orm";
+import { and, asc, count, eq, inArray, isNull, sql } from "drizzle-orm";
 import { db } from "../../db/client.js";
 import { recipeComments } from "../../db/schema.js";
-import type {
-  CreateRecipeCommentInput,
-  UpdateRecipeCommentInput
-} from "./recipe-comment.schemas.js";
+import type { UpdateRecipeCommentInput } from "./recipe-comment.schemas.js";
 
 function nowIsoString(): string {
   return new Date().toISOString();
@@ -14,14 +11,14 @@ export async function listRecipeComments(recipeId: string, limit: number, offset
   const [totalRow] = await db
     .select({ total: count() })
     .from(recipeComments)
-    .where(eq(recipeComments.recipeId, recipeId));
+    .where(and(eq(recipeComments.recipeId, recipeId), isNull(recipeComments.parentCommentId)));
 
   const items = await db.query.recipeComments.findMany({
-    where: eq(recipeComments.recipeId, recipeId),
+    where: and(eq(recipeComments.recipeId, recipeId), isNull(recipeComments.parentCommentId)),
     with: {
       author: true
     },
-    orderBy: [desc(recipeComments.createdAt)],
+    orderBy: [asc(recipeComments.createdAt)],
     limit,
     offset
   });
@@ -41,6 +38,45 @@ export async function getRecipeCommentById(commentId: string) {
   });
 }
 
+export async function listRecipeCommentReplies(
+  recipeId: string,
+  parentCommentId: string,
+  limit: number,
+  offset: number
+) {
+  const items = await db.query.recipeComments.findMany({
+    where: and(
+      eq(recipeComments.recipeId, recipeId),
+      eq(recipeComments.parentCommentId, parentCommentId)
+    ),
+    with: {
+      author: true
+    },
+    orderBy: [asc(recipeComments.createdAt)],
+    limit,
+    offset
+  });
+
+  return { items };
+}
+
+export async function listRecipeCommentsByParentIds(recipeId: string, parentCommentIds: string[]) {
+  if (!parentCommentIds.length) {
+    return [];
+  }
+
+  return db.query.recipeComments.findMany({
+    where: and(
+      eq(recipeComments.recipeId, recipeId),
+      inArray(recipeComments.parentCommentId, parentCommentIds)
+    ),
+    with: {
+      author: true
+    },
+    orderBy: [asc(recipeComments.createdAt)]
+  });
+}
+
 export async function listRecipeCommentCounts(recipeIds: string[]) {
   if (!recipeIds.length) {
     return [];
@@ -57,23 +93,31 @@ export async function listRecipeCommentCounts(recipeIds: string[]) {
 }
 
 export async function createRecipeComment(
-  recipeId: string,
-  authorId: string,
-  input: CreateRecipeCommentInput
+  input: {
+    id: string;
+    recipeId: string;
+    authorId: string;
+    body: string;
+    parentCommentId: string | null;
+    rootCommentId: string;
+    depth: number;
+    createdAt: string;
+    updatedAt: string;
+  }
 ) {
-  const timestamp = nowIsoString();
-  const commentId = crypto.randomUUID();
-
   await db.insert(recipeComments).values({
-    id: commentId,
-    recipeId,
-    authorId,
+    id: input.id,
+    recipeId: input.recipeId,
+    authorId: input.authorId,
+    parentCommentId: input.parentCommentId,
+    rootCommentId: input.rootCommentId,
+    depth: input.depth,
     body: input.body,
-    createdAt: timestamp,
-    updatedAt: timestamp
+    createdAt: input.createdAt,
+    updatedAt: input.updatedAt
   });
 
-  return getRecipeCommentById(commentId);
+  return getRecipeCommentById(input.id);
 }
 
 export async function updateRecipeComment(commentId: string, input: UpdateRecipeCommentInput) {
@@ -89,5 +133,23 @@ export async function updateRecipeComment(commentId: string, input: UpdateRecipe
 }
 
 export async function deleteRecipeComment(commentId: string) {
-  await db.delete(recipeComments).where(eq(recipeComments.id, commentId));
+  await db
+    .update(recipeComments)
+    .set({
+      body: "",
+      deletedAt: nowIsoString(),
+      updatedAt: nowIsoString()
+    })
+    .where(eq(recipeComments.id, commentId));
+
+  return getRecipeCommentById(commentId);
+}
+
+export async function incrementRecipeCommentReplyCount(commentId: string) {
+  await db
+    .update(recipeComments)
+    .set({
+      replyCount: sql`${recipeComments.replyCount} + 1`
+    })
+    .where(eq(recipeComments.id, commentId));
 }

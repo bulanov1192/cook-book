@@ -32,6 +32,18 @@ export async function getRecipeComments(
   return loadRequest<RecipeCommentListResponse>(fetcher, `/api/recipes/${id}/comments${buildQuery(params)}`);
 }
 
+export async function getRecipeCommentReplies(
+  fetcher: typeof fetch,
+  recipeId: string,
+  commentId: string,
+  params: Record<string, string | number | undefined>
+) {
+  return loadRequest<RecipeCommentListResponse>(
+    fetcher,
+    `/api/recipes/${recipeId}/comments/${commentId}/replies${buildQuery(params)}`
+  );
+}
+
 export async function getRecipeVote(fetcher: typeof fetch, id: string) {
   return loadRequest<RecipeVoteSummary>(fetcher, `/api/recipes/${id}/vote`);
 }
@@ -89,7 +101,7 @@ export async function updateRecipeComment(
 }
 
 export async function deleteRecipeComment(recipeId: string, commentId: string) {
-  return request<{ ok: true }>(`/api/recipes/${recipeId}/comments/${commentId}`, {
+  return request<RecipeComment>(`/api/recipes/${recipeId}/comments/${commentId}`, {
     method: "DELETE"
   });
 }

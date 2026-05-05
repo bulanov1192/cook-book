@@ -1,0 +1,90 @@
+.composer {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.compact {
+  gap: 0.65rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.submitRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+}
+
+.iconButton {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  width: 2.4rem;
+  height: 2.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--color-text-soft);
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease,
+    border-color 180ms ease;
+}
+
+.iconButton:hover:not(:disabled),
+.iconButton:focus-visible:not(:disabled) {
+  outline: none;
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(108, 72, 44, 0.12);
+  color: var(--color-text);
+}
+
+.submitIconButton {
+  background: rgba(200, 93, 43, 0.12);
+  color: var(--color-accent-deep);
+}
+
+.submitIconButton:hover:not(:disabled),
+.submitIconButton:focus-visible:not(:disabled) {
+  background: rgba(200, 93, 43, 0.18);
+  border-color: rgba(200, 93, 43, 0.2);
+}
+
+.iconButton:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.emojiPanel {
+  position: relative;
+  z-index: 3;
+  overflow: auto;
+  padding: 0.35rem;
+  border: 1px solid rgba(108, 72, 44, 0.12);
+  border-radius: var(--radius-md);
+  background: rgba(255, 250, 243, 0.97);
+  box-shadow: 0 22px 40px rgba(77, 45, 27, 0.14);
+}
+
+@media (max-width: 720px) {
+  .actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .submitRow {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

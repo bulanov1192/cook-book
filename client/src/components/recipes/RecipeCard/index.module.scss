@@ -20,6 +20,13 @@
   line-height: var(--card-title-line);
 }
 
+.link {
+  color: var(--color-text);
+  text-decoration: none;
+  outline: none;
+  transition: color 180ms ease;
+}
+
 .meta {
   color: var(--color-text-soft);
 }

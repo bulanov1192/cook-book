@@ -25,10 +25,14 @@
   <article class={styles.card}>
     <div class={styles.header}>
       <div class={styles.titleBlock}>
-        <h3 class={styles.title}>{recipe.title}</h3>
+        <a href={`/recipes/${recipe.id}`} class={styles.link}>
+          <h3 class={styles.title}>{recipe.title}</h3>
+        </a>
         <p class={styles.meta}>
           {recipe.category ?? $dictionary.recipes.card.uncategorized} ·
-          {formatMessage($dictionary.recipes.card.updated, { date: formatDate(recipe.updatedAt) })}
+          {formatMessage($dictionary.recipes.card.updated, {
+            date: formatDate(recipe.updatedAt),
+          })}
         </p>
       </div>
 
@@ -41,27 +45,45 @@
 
     <div class={styles.ratingStrip}>
       <div class={styles.ratingScore}>
-        <span class={styles.ratingLabel}>{$dictionary.recipes.card.rating}</span>
+        <span class={styles.ratingLabel}>{$dictionary.recipes.card.rating}</span
+        >
         <span class={styles.ratingValue}>{recipe.vote.score}</span>
       </div>
       <div class={styles.ratingStats}>
-        <span>{formatMessage($dictionary.recipes.card.likes, { count: recipe.vote.upvoteCount })}</span>
-        <span>{formatMessage($dictionary.recipes.card.dislikes, { count: recipe.vote.downvoteCount })}</span>
-        <span>{formatMessage($dictionary.recipes.card.comments, { count: recipe.commentCount })}</span>
+        <span
+          >{formatMessage($dictionary.recipes.card.likes, {
+            count: recipe.vote.upvoteCount,
+          })}</span
+        >
+        <span
+          >{formatMessage($dictionary.recipes.card.dislikes, {
+            count: recipe.vote.downvoteCount,
+          })}</span
+        >
+        <span
+          >{formatMessage($dictionary.recipes.card.comments, {
+            count: recipe.commentCount,
+          })}</span
+        >
       </div>
     </div>
 
     <div class={styles.facts}>
       <div class={styles.fact}>
         <span class={styles.factLabel}>{$dictionary.recipes.card.total}</span>
-        <span class={styles.factValue}>{formatMinutes(recipe.totalMinutes)}</span>
+        <span class={styles.factValue}
+          >{formatMinutes(recipe.totalMinutes)}</span
+        >
       </div>
       <div class={styles.fact}>
-        <span class={styles.factLabel}>{$dictionary.recipes.card.servings}</span>
+        <span class={styles.factLabel}>{$dictionary.recipes.card.servings}</span
+        >
         <span class={styles.factValue}>{recipe.servings}</span>
       </div>
       <div class={styles.fact}>
-        <span class={styles.factLabel}>{$dictionary.recipes.card.ingredients}</span>
+        <span class={styles.factLabel}
+          >{$dictionary.recipes.card.ingredients}</span
+        >
         <span class={styles.factValue}>{recipe.ingredientCount}</span>
       </div>
       <div class={styles.fact}>
@@ -79,7 +101,9 @@
     {/if}
 
     <div class={styles.actions}>
-      <Button href={`/recipes/${recipe.id}`}>{$dictionary.recipes.card.open}</Button>
+      <Button href={`/recipes/${recipe.id}`}
+        >{$dictionary.recipes.card.open}</Button
+      >
       {#if recipe.canEdit}
         <Button href={`/recipes/${recipe.id}/edit`} variant="secondary">
           {$dictionary.recipes.card.edit}

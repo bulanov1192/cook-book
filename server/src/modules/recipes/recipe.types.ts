@@ -17,13 +17,22 @@ export type RecipeCommentAuthorDto = {
 export type RecipeCommentDto = {
   id: string;
   recipeId: string;
+  parentCommentId: string | null;
+  rootCommentId: string;
+  depth: number;
+  replyCount: number;
+  score: number;
   author: RecipeCommentAuthorDto;
-  body: string;
+  body: string | null;
+  isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
   isEdited: boolean;
   canEdit: boolean;
   canDelete: boolean;
+  previewReplies: RecipeCommentDto[];
+  loadedReplyCount: number;
+  hasMoreReplies: boolean;
 };
 
 export type RecipeCommentListResponseDto = {

@@ -15,6 +15,7 @@ import {
 import {
   createRecipeCommentSchema,
   listRecipeCommentsQuerySchema,
+  listRecipeCommentRepliesQuerySchema,
   recipeCommentIdParamsSchema,
   recipeCommentParamsSchema,
   updateRecipeCommentSchema
@@ -215,20 +216,30 @@ const recipeCommentAuthorSchema = registry.register(
   })
 );
 
-const recipeCommentSchema = registry.register(
-  "RecipeComment",
+const recipeCommentSchema: z.ZodType = z.lazy(() =>
   z.object({
     id: z.string().uuid(),
     recipeId: z.string().uuid(),
+    parentCommentId: z.string().uuid().nullable(),
+    rootCommentId: z.string().uuid(),
+    depth: z.number().int().nonnegative(),
+    replyCount: z.number().int().nonnegative(),
+    score: z.number().int(),
     author: recipeCommentAuthorSchema,
-    body: z.string(),
+    body: z.string().nullable(),
+    isDeleted: z.boolean(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     isEdited: z.boolean(),
     canEdit: z.boolean(),
-    canDelete: z.boolean()
+    canDelete: z.boolean(),
+    loadedReplyCount: z.number().int().nonnegative(),
+    hasMoreReplies: z.boolean(),
+    previewReplies: z.array(recipeCommentSchema)
   })
 );
+
+registry.register("RecipeComment", recipeCommentSchema);
 
 const recipeCommentListResponseSchema = registry.register(
   "RecipeCommentListResponse",
@@ -634,6 +645,24 @@ registry.registerPath({
 });
 
 registry.registerPath({
+  method: "get",
+  path: "/api/recipes/{id}/comments/{commentId}/replies",
+  tags: ["Recipes"],
+  summary: "List direct replies for a recipe comment",
+  request: {
+    params: recipeCommentIdParamsSchema,
+    query: listRecipeCommentRepliesQuerySchema
+  },
+  responses: {
+    200: {
+      description: "Direct reply page with nested preview replies",
+      content: jsonContent(recipeCommentListResponseSchema)
+    },
+    ...standardErrorResponses({ includeValidation: true, includeNotFound: true })
+  }
+});
+
+registry.registerPath({
   method: "patch",
   path: "/api/recipes/{id}/comments/{commentId}",
   tags: ["Recipes"],
@@ -666,7 +695,7 @@ registry.registerPath({
   responses: {
     200: {
       description: "Comment deleted",
-      content: jsonContent(z.object({ ok: z.literal(true) }))
+      content: jsonContent(recipeCommentSchema)
     },
     ...standardErrorResponses({ includeValidation: true, includeNotFound: true })
   }

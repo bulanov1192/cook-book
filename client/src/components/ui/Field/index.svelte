@@ -20,9 +20,9 @@
 
   <slot />
 
-  {#if hint}
-    <span class={styles.hint}>{hint}</span>
-  {/if}
+  <span class={styles.hint}
+    >{#if hint}{hint}{/if}&nbsp;</span
+  >
 
   {#if error}
     <span class={styles.error}>{error}</span>

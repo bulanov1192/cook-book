@@ -91,13 +91,22 @@ export type RecipeCommentAuthor = {
 export type RecipeComment = {
   id: string;
   recipeId: string;
+  parentCommentId: string | null;
+  rootCommentId: string;
+  depth: number;
+  replyCount: number;
+  score: number;
   author: RecipeCommentAuthor;
-  body: string;
+  body: string | null;
+  isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
   isEdited: boolean;
   canEdit: boolean;
   canDelete: boolean;
+  previewReplies: RecipeComment[];
+  loadedReplyCount: number;
+  hasMoreReplies: boolean;
 };
 
 export type RecipeCommentListResponse = {
@@ -210,6 +219,7 @@ export type SignUpPayload = SignInPayload & {
 
 export type RecipeCommentPayload = {
   body: string;
+  parentCommentId?: string;
 };
 
 export type RecipeVotePayload = {
