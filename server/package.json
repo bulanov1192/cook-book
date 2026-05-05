@@ -11,6 +11,8 @@
     "prestart": "npm run build",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit -p tsconfig.json",
+    "db:migrate": "node dist/scripts/run-db-migrations.js",
+    "db:import:sqlite": "node dist/scripts/migrate-sqlite-to-postgres.js",
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio"
   },
@@ -23,6 +25,7 @@
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.45.2",
     "express": "^5.1.0",
+    "pg": "^8.16.0",
     "pino": "^9.7.0",
     "pino-http": "^10.5.0",
     "swagger-ui-express": "^5.0.1",
@@ -33,6 +36,7 @@
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.3",
     "@types/node": "^22.15.18",
+    "@types/pg": "^8.15.2",
     "drizzle-kit": "^0.31.10",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"

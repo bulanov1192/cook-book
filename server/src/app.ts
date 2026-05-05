@@ -19,7 +19,7 @@ const logger = pino({
   level: env.NODE_ENV === "development" ? "debug" : "info"
 });
 
-initializeDatabase();
+await initializeDatabase();
 
 const openApiDocument = createOpenApiDocument();
 

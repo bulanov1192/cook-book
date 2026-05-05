@@ -1,47 +1,50 @@
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import {
+  boolean,
+  doublePrecision,
   index,
   integer,
+  pgTable,
   primaryKey,
-  real,
-  sqliteTable,
-  text
-} from "drizzle-orm/sqlite-core";
+  text,
+  timestamp,
+  uniqueIndex
+} from "drizzle-orm/pg-core";
 
 export const recipeStatusValues = ["draft", "published", "private", "archived"] as const;
 export const shoppingListStatusValues = ["active", "archived"] as const;
 export const shoppingListVisibilityValues = ["private", "public"] as const;
 export const localeValues = ["en", "ru"] as const;
 
-export const user = sqliteTable(
+export const user = pgTable(
   "user",
   {
     id: text("id").primaryKey(),
     name: text("name").notNull(),
     email: text("email").notNull(),
-    emailVerified: integer("emailVerified", { mode: "boolean" }).notNull().default(false),
+    emailVerified: boolean("emailVerified").notNull().default(false),
     image: text("image"),
     locale: text("locale", { enum: localeValues }).notNull().default("en"),
     role: text("role").default("user"),
-    banned: integer("banned", { mode: "boolean" }).default(false),
+    banned: boolean("banned").default(false),
     banReason: text("banReason"),
-    banExpires: integer("banExpires", { mode: "timestamp_ms" }),
-    createdAt: integer("createdAt", { mode: "timestamp_ms" }).notNull(),
-    updatedAt: integer("updatedAt", { mode: "timestamp_ms" }).notNull()
+    banExpires: timestamp("banExpires", { withTimezone: true, mode: "date" }),
+    createdAt: timestamp("createdAt", { withTimezone: true, mode: "date" }).notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true, mode: "date" }).notNull()
   },
   (table) => ({
-    emailIdx: index("user_email_idx").on(table.email)
+    emailIdx: uniqueIndex("user_email_idx").on(table.email)
   })
 );
 
-export const session = sqliteTable(
+export const session = pgTable(
   "session",
   {
     id: text("id").primaryKey(),
-    expiresAt: integer("expiresAt", { mode: "timestamp_ms" }).notNull(),
+    expiresAt: timestamp("expiresAt", { withTimezone: true, mode: "date" }).notNull(),
     token: text("token").notNull(),
-    createdAt: integer("createdAt", { mode: "timestamp_ms" }).notNull(),
-    updatedAt: integer("updatedAt", { mode: "timestamp_ms" }).notNull(),
+    createdAt: timestamp("createdAt", { withTimezone: true, mode: "date" }).notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true, mode: "date" }).notNull(),
     ipAddress: text("ipAddress"),
     userAgent: text("userAgent"),
     userId: text("userId")
@@ -50,12 +53,12 @@ export const session = sqliteTable(
     impersonatedBy: text("impersonatedBy")
   },
   (table) => ({
-    tokenIdx: index("session_token_idx").on(table.token),
+    tokenIdx: uniqueIndex("session_token_idx").on(table.token),
     userIdx: index("session_userId_idx").on(table.userId)
   })
 );
 
-export const account = sqliteTable(
+export const account = pgTable(
   "account",
   {
     id: text("id").primaryKey(),
@@ -67,12 +70,18 @@ export const account = sqliteTable(
     accessToken: text("accessToken"),
     refreshToken: text("refreshToken"),
     idToken: text("idToken"),
-    accessTokenExpiresAt: integer("accessTokenExpiresAt", { mode: "timestamp_ms" }),
-    refreshTokenExpiresAt: integer("refreshTokenExpiresAt", { mode: "timestamp_ms" }),
+    accessTokenExpiresAt: timestamp("accessTokenExpiresAt", {
+      withTimezone: true,
+      mode: "date"
+    }),
+    refreshTokenExpiresAt: timestamp("refreshTokenExpiresAt", {
+      withTimezone: true,
+      mode: "date"
+    }),
     scope: text("scope"),
     password: text("password"),
-    createdAt: integer("createdAt", { mode: "timestamp_ms" }).notNull(),
-    updatedAt: integer("updatedAt", { mode: "timestamp_ms" }).notNull()
+    createdAt: timestamp("createdAt", { withTimezone: true, mode: "date" }).notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true, mode: "date" }).notNull()
   },
   (table) => ({
     userIdx: index("account_userId_idx").on(table.userId),
@@ -80,22 +89,22 @@ export const account = sqliteTable(
   })
 );
 
-export const verification = sqliteTable(
+export const verification = pgTable(
   "verification",
   {
     id: text("id").primaryKey(),
     identifier: text("identifier").notNull(),
     value: text("value").notNull(),
-    expiresAt: integer("expiresAt", { mode: "timestamp_ms" }).notNull(),
-    createdAt: integer("createdAt", { mode: "timestamp_ms" }).notNull(),
-    updatedAt: integer("updatedAt", { mode: "timestamp_ms" }).notNull()
+    expiresAt: timestamp("expiresAt", { withTimezone: true, mode: "date" }).notNull(),
+    createdAt: timestamp("createdAt", { withTimezone: true, mode: "date" }).notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true, mode: "date" }).notNull()
   },
   (table) => ({
     identifierIdx: index("verification_identifier_idx").on(table.identifier)
   })
 );
 
-export const recipes = sqliteTable(
+export const recipes = pgTable(
   "recipes",
   {
     id: text("id").primaryKey(),
@@ -109,8 +118,8 @@ export const recipes = sqliteTable(
     notes: text("notes"),
     ownerId: text("owner_id"),
     status: text("status", { enum: recipeStatusValues }).notNull().default("draft"),
-    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`)
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at").notNull()
   },
   (table) => ({
     titleIdx: index("recipes_title_idx").on(table.title),
@@ -120,7 +129,7 @@ export const recipes = sqliteTable(
   })
 );
 
-export const recipeIngredients = sqliteTable(
+export const recipeIngredients = pgTable(
   "recipe_ingredients",
   {
     id: text("id").primaryKey(),
@@ -128,10 +137,10 @@ export const recipeIngredients = sqliteTable(
       .notNull()
       .references(() => recipes.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
-    amount: real("amount"),
+    amount: doublePrecision("amount"),
     unit: text("unit"),
     preparationNote: text("preparation_note"),
-    optional: integer("optional", { mode: "boolean" }).notNull().default(false),
+    optional: boolean("optional").notNull().default(false),
     sortOrder: integer("sort_order").notNull()
   },
   (table) => ({
@@ -139,7 +148,7 @@ export const recipeIngredients = sqliteTable(
   })
 );
 
-export const recipeSteps = sqliteTable(
+export const recipeSteps = pgTable(
   "recipe_steps",
   {
     id: text("id").primaryKey(),
@@ -154,13 +163,19 @@ export const recipeSteps = sqliteTable(
   })
 );
 
-export const tags = sqliteTable("tags", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  slug: text("slug").notNull().unique()
-});
+export const tags = pgTable(
+  "tags",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    slug: text("slug").notNull()
+  },
+  (table) => ({
+    slugIdx: uniqueIndex("tags_slug_idx").on(table.slug)
+  })
+);
 
-export const recipeTagLinks = sqliteTable(
+export const recipeTagLinks = pgTable(
   "recipe_tag_links",
   {
     recipeId: text("recipe_id")
@@ -175,7 +190,7 @@ export const recipeTagLinks = sqliteTable(
   })
 );
 
-export const shoppingLists = sqliteTable(
+export const shoppingLists = pgTable(
   "shopping_lists",
   {
     id: text("id").primaryKey(),
@@ -185,8 +200,8 @@ export const shoppingLists = sqliteTable(
     visibility: text("visibility", { enum: shoppingListVisibilityValues })
       .notNull()
       .default("private"),
-    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`)
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at").notNull()
   },
   (table) => ({
     statusIdx: index("shopping_lists_status_idx").on(table.status),
@@ -195,7 +210,7 @@ export const shoppingLists = sqliteTable(
   })
 );
 
-export const shoppingListItems = sqliteTable(
+export const shoppingListItems = pgTable(
   "shopping_list_items",
   {
     id: text("id").primaryKey(),
@@ -203,9 +218,9 @@ export const shoppingListItems = sqliteTable(
       .notNull()
       .references(() => shoppingLists.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
-    amount: real("amount"),
+    amount: doublePrecision("amount"),
     unit: text("unit"),
-    checked: integer("checked", { mode: "boolean" }).notNull().default(false),
+    checked: boolean("checked").notNull().default(false),
     sourceRecipeId: text("source_recipe_id").references(() => recipes.id, {
       onDelete: "set null"
     }),

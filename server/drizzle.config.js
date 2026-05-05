@@ -4,8 +4,8 @@ const drizzle_kit_1 = require("drizzle-kit");
 exports.default = (0, drizzle_kit_1.defineConfig)({
     schema: "./src/db/schema.ts",
     out: "./drizzle",
-    dialect: "sqlite",
+    dialect: "postgresql",
     dbCredentials: {
-        url: process.env.DATABASE_FILE ?? "./data/recipe-book.db"
+        url: process.env.DATABASE_URL ?? "postgres://cookbook:cookbook@localhost:5432/cookbook"
     }
 });

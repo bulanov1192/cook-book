@@ -3,9 +3,8 @@ import { defineConfig } from "drizzle-kit";
 export default defineConfig({
   schema: "./src/db/schema.ts",
   out: "./drizzle",
-  dialect: "sqlite",
+  dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_FILE ?? "./data/recipe-book.db"
+    url: process.env.DATABASE_URL ?? "postgres://cookbook:cookbook@localhost:5432/cookbook"
   }
 });
-

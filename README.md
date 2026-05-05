@@ -1,197 +1,153 @@
 # Recipe Book App
 
-A full-stack web application for managing recipes and shopping lists, built with modern web technologies.
+Recipe and shopping-list manager built as a monorepo:
 
-## Features
+- `client/` - SvelteKit frontend
+- `server/` - Express + TypeScript API
+- root `docker-compose.yml` - local/prod deployment with Caddy and PostgreSQL
 
-- **Recipe Management**: Create, edit, and organize recipes with ingredients and steps
-- **Shopping Lists**: Generate shopping lists from recipes and manage grocery items
-- **User Authentication**: Secure user registration and login
-- **Responsive Design**: Mobile-friendly interface built with SvelteKit
-- **API Documentation**: Interactive Swagger UI for backend endpoints
+## Stack
 
-## Tech Stack
+- SvelteKit
+- TypeScript
+- Express
+- Better Auth
+- Drizzle ORM
+- PostgreSQL
+- Caddy
+- Docker Compose
 
-### Frontend
+## Local development
 
-- **SvelteKit**: Modern framework for building web applications
-- **TypeScript**: Type-safe JavaScript
-- **Sass**: CSS preprocessor for styling
-- **Vite**: Fast build tool and development server
+### Install dependencies
 
-### Backend
+```bash
+cd server
+npm install
 
-- **Node.js**: JavaScript runtime
-- **Express**: Web framework for API
-- **TypeScript**: Type-safe server code
-- **Drizzle ORM**: Type-safe SQL query builder for SQLite
-- **Better Auth**: Authentication library
-- **SQLite**: Lightweight database
+cd ../client
+npm install
+```
 
-## Prerequisites
+### Run in development
 
-- Node.js (version 18 or higher)
-- npm or yarn
+Backend:
 
-## Installation
+```bash
+cd server
+npm run dev
+```
 
-1. Clone the repository:
+Frontend:
 
-   ```bash
-   git clone <repository-url>
-   cd html-training
-   ```
+```bash
+cd client
+npm run dev
+```
 
-2. Install dependencies for both client and server:
+## Docker deployment
 
-   ```bash
-   # Install server dependencies
-   cd server
-   npm install
+The repo is configured so the code and compose files stay in git, while server-specific values live in the root `.env`.
 
-   # Install client dependencies
-   cd ../client
-   npm install
-   ```
-
-3. Set up the database:
-
-   ```bash
-   # Generate database migrations
-   cd ../server
-   npm run db:generate
-
-   # Create environment file (optional, defaults will be used)
-   cp .env.example .env  # If .env.example exists, otherwise create .env with:
-   # NODE_ENV=development
-   # PORT=3000
-   # DATABASE_FILE=./data/recipe-book.db
-   # CORS_ORIGIN=http://localhost:5173
-   # BETTER_AUTH_SECRET=your-secret-key-here
-   # ADMIN_EMAILS=mymail@local.com
-   ```
-
-## Running the Application
-
-1. Start the backend server:
-
-   ```bash
-   cd server
-   npm run dev
-   ```
-
-   The server will start on `http://localhost:3000`
-
-2. Start the frontend client (in a new terminal):
-
-   ```bash
-   cd client
-   npm run dev
-   ```
-
-   The client will start on `http://localhost:5173`
-
-3. Open your browser and navigate to `http://localhost:5173`
-
-## Docker
-
-The project includes production-oriented Docker setup for:
-
-- `server`: Express API with SQLite stored on a persistent Docker volume
-- `client`: SvelteKit app built with `@sveltejs/adapter-node`
-- `caddy`: reverse proxy that serves the frontend and forwards `/api`, `/docs`, and `/openapi.json`
-
-For HTTPS/domain deployments, keep:
-
-- `PUBLIC_API_BASE_URL=""` so the browser uses same-origin `/api`
-- `INTERNAL_API_BASE_URL=http://server:3000` so SvelteKit SSR can reach the backend over the Docker network
-
-### Start with Docker Compose
+### First setup
 
 ```bash
 cp .env.example .env
-docker compose up --build
 ```
 
-The app will be available at `http://localhost`.
-
-### Stop and remove containers
-
-```bash
-docker compose down
-```
-
-To remove the SQLite volume too:
-
-```bash
-docker compose down -v
-```
-
-### Important environment values
-
-The compose file now reads its deployment settings from the repo root `.env` file.
-
-Recommended workflow:
-
-1. Keep `docker-compose.yml` and `deploy/Caddyfile` in git.
-2. Keep secrets and per-server values only in `.env`.
-3. On the server:
-
-```bash
-git pull
-cp .env.example .env   # only on first setup
-nano .env              # edit domain, secret and ports if needed
-docker compose up -d --build
-```
-
-For domain + HTTPS deployment, the most important `.env` values are:
+Important values:
 
 - `APP_ORIGIN=https://your-domain.tld`
 - `CADDY_SITE_ADDRESS=your-domain.tld, www.your-domain.tld`
 - `BETTER_AUTH_SECRET=<long-random-secret>`
+- `ADMIN_EMAILS=you@example.com`
 - `PUBLIC_API_BASE_URL=`
 - `INTERNAL_API_BASE_URL=http://server:3000`
+- `DATABASE_PROVIDER=postgres`
+- `DATABASE_URL=postgres://cookbook:cookbook@postgres:5432/cookbook`
+- `POSTGRES_DB=cookbook`
+- `POSTGRES_USER=cookbook`
+- `POSTGRES_PASSWORD=<strong-password>`
+- `SQLITE_MIGRATION_SOURCE=/app/data/recipe-book.db`
 
-SQLite data is persisted in the `server_data` Docker volume and mounted inside the backend container at `/app/data`.
+### Start the stack
 
-## API Documentation
-
-When the server is running, visit `http://localhost:3000/docs` to view the interactive API documentation powered by Swagger UI.
-
-## Development
-
-### Available Scripts
-
-#### Server
-
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Build for production
-- `npm start` - Start production server
-- `npm run typecheck` - Run TypeScript type checking
-- `npm run db:generate` - Generate database migrations
-- `npm run db:studio` - Open Drizzle Studio for database management
-
-#### Client
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run check` - Run SvelteKit type checking
-
-### Project Structure
-
-```
-├── client/          # SvelteKit frontend
-├── server/          # Express backend
-│   ├── src/
-│   │   ├── auth/    # Authentication logic
-│   │   ├── db/      # Database schema and client
-│   │   ├── modules/ # Feature modules (recipes, shopping-lists)
-│   │   └── shared/  # Shared utilities
-│   └── drizzle/     # Database migrations
-└── .gitignore       # Git ignore rules
+```bash
+docker compose up -d --build
 ```
 
-## License
+Services:
 
-This project is for educational purposes.
+- `postgres` - main runtime database
+- `server` - API
+- `client` - SvelteKit node app
+- `caddy` - reverse proxy with automatic HTTPS
+
+## Database runtime
+
+PostgreSQL is now the main runtime database.
+
+- application schema is created from SQL migrations in `server/migrations/`
+- migrations are applied automatically when the server starts
+- the current SQLite file is kept only as a migration source / fallback backup
+
+## Migrating existing SQLite data to PostgreSQL
+
+If you already have data in the old SQLite volume/file:
+
+1. Bring the new stack up so Postgres is running.
+2. Make sure `SQLITE_MIGRATION_SOURCE` points to the existing SQLite file.
+3. Run the one-time import:
+
+```bash
+docker compose exec server npm run db:import:sqlite
+```
+
+What the import does:
+
+- creates PostgreSQL tables if needed
+- checks that target Postgres tables are empty
+- copies auth tables and product tables in dependency-safe order
+- preserves IDs and timestamps
+
+Source tables copied:
+
+- `user`
+- `session`
+- `account`
+- `verification`
+- `recipes`
+- `recipe_ingredients`
+- `recipe_steps`
+- `tags`
+- `recipe_tag_links`
+- `shopping_lists`
+- `shopping_list_items`
+
+After a successful import, keep the old SQLite file around as a backup until you are fully comfortable with the new setup.
+
+## Useful commands
+
+From `server/`:
+
+- `npm run dev`
+- `npm run build`
+- `npm start`
+- `npm run typecheck`
+- `npm run db:migrate`
+- `npm run db:import:sqlite`
+- `npm run db:generate`
+- `npm run db:studio`
+
+From `client/`:
+
+- `npm run dev`
+- `npm run build`
+- `npm run preview`
+- `npm run check`
+
+## Notes
+
+- Keep `PUBLIC_API_BASE_URL` empty so the browser uses same-origin `/api`.
+- `INTERNAL_API_BASE_URL` is only for SvelteKit SSR inside Docker.
+- For HTTPS, Caddy uses free certificates from Let's Encrypt automatically when the domain points to the server and ports `80` and `443` are open.

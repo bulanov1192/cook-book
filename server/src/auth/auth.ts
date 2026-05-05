@@ -11,7 +11,7 @@ export const auth = betterAuth({
   secret: env.BETTER_AUTH_SECRET,
   trustedOrigins: [env.CORS_ORIGIN],
   database: drizzleAdapter(db, {
-    provider: "sqlite",
+    provider: "pg",
     schema,
     camelCase: true
   }),
