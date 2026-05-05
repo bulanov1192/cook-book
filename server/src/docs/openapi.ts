@@ -622,8 +622,12 @@ export function createOpenApiDocument() {
     },
     servers: [
       {
-        url: `http://localhost:${env.PORT}`,
-        description: "Local development server"
+        url: "/",
+        description: "Current origin"
+      },
+      {
+        url: env.BETTER_AUTH_URL,
+        description: "Configured application origin"
       }
     ],
     tags: [
