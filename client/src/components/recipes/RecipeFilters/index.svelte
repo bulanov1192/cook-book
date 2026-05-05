@@ -30,6 +30,8 @@
   $: sortOptions = [
     { value: "updatedAt", label: $dictionary.recipes.filters.recentlyUpdated },
     { value: "createdAt", label: $dictionary.recipes.filters.recentlyCreated },
+    { value: "hotness", label: $dictionary.recipes.filters.hotness },
+    { value: "score", label: $dictionary.recipes.filters.score },
     { value: "title", label: $dictionary.recipes.filters.title },
     { value: "totalMinutes", label: $dictionary.recipes.filters.totalTime }
   ];

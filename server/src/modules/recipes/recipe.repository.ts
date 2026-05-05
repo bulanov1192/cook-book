@@ -30,6 +30,7 @@ type RecipeWithRelations = Awaited<ReturnType<typeof getRecipeById>>;
 export async function listRecipes(): Promise<NonNullable<RecipeWithRelations>[]> {
   return db.query.recipes.findMany({
     with: {
+      voteSummary: true,
       ingredients: true,
       steps: true,
       tagLinks: {
@@ -45,6 +46,7 @@ export async function getRecipeById(id: string) {
   return db.query.recipes.findFirst({
     where: eq(recipes.id, id),
     with: {
+      voteSummary: true,
       ingredients: true,
       steps: true,
       tagLinks: {

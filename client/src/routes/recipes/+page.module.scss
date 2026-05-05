@@ -9,3 +9,15 @@
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1rem;
 }
+
+.loadState {
+  padding: 0.95rem 1rem;
+  text-align: center;
+  color: var(--color-text-soft);
+  font-weight: 600;
+}
+
+.loadStateError {
+  color: var(--color-danger);
+  font-weight: 700;
+}

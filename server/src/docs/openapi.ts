@@ -13,9 +13,18 @@ import {
   updateRecipeSchema
 } from "../modules/recipes/recipe.schemas.js";
 import {
+  createRecipeCommentSchema,
+  listRecipeCommentsQuerySchema,
+  recipeCommentIdParamsSchema,
+  recipeCommentParamsSchema,
+  updateRecipeCommentSchema
+} from "../modules/recipe-comments/recipe-comment.schemas.js";
+import { recipeVoteValueSchema, setRecipeVoteSchema } from "../modules/recipe-votes/recipe-vote.schemas.js";
+import {
   createShoppingListItemSchema,
   createShoppingListSchema,
   importRecipeIntoShoppingListSchema,
+  listShoppingListsQuerySchema,
   shoppingListIdParamsSchema,
   shoppingListItemIdParamsSchema,
   shoppingListStatusSchema,
@@ -66,6 +75,12 @@ const recipeSchema = registry.register(
     isOwner: z.boolean(),
     canEdit: z.boolean(),
     isPublic: z.boolean(),
+    vote: z.object({
+      upvoteCount: z.number().int().nonnegative(),
+      downvoteCount: z.number().int().nonnegative(),
+      score: z.number().int(),
+      currentUserVote: recipeVoteValueSchema.nullable()
+    }),
     tags: z.array(z.string()),
     ingredients: z.array(recipeIngredientSchema),
     steps: z.array(recipeStepSchema),
@@ -81,7 +96,8 @@ const recipeListItemSchema = registry.register(
     steps: true
   }).extend({
     ingredientCount: z.number().int().nonnegative(),
-    stepCount: z.number().int().nonnegative()
+    stepCount: z.number().int().nonnegative(),
+    commentCount: z.number().int().nonnegative()
   })
 );
 
@@ -171,7 +187,58 @@ const shoppingListListItemSchema = registry.register(
 const shoppingListListResponseSchema = registry.register(
   "ShoppingListListResponse",
   z.object({
-    items: z.array(shoppingListListItemSchema)
+    items: z.array(shoppingListListItemSchema),
+    meta: z.object({
+      total: z.number().int().nonnegative(),
+      limit: z.number().int().positive(),
+      offset: z.number().int().nonnegative()
+    })
+  })
+);
+
+const recipeVoteSummarySchema = registry.register(
+  "RecipeVoteSummary",
+  z.object({
+    upvoteCount: z.number().int().nonnegative(),
+    downvoteCount: z.number().int().nonnegative(),
+    score: z.number().int(),
+    currentUserVote: recipeVoteValueSchema.nullable()
+  })
+);
+
+const recipeCommentAuthorSchema = registry.register(
+  "RecipeCommentAuthor",
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    image: z.string().nullable()
+  })
+);
+
+const recipeCommentSchema = registry.register(
+  "RecipeComment",
+  z.object({
+    id: z.string().uuid(),
+    recipeId: z.string().uuid(),
+    author: recipeCommentAuthorSchema,
+    body: z.string(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    isEdited: z.boolean(),
+    canEdit: z.boolean(),
+    canDelete: z.boolean()
+  })
+);
+
+const recipeCommentListResponseSchema = registry.register(
+  "RecipeCommentListResponse",
+  z.object({
+    items: z.array(recipeCommentSchema),
+    meta: z.object({
+      total: z.number().int().nonnegative(),
+      limit: z.number().int().positive(),
+      offset: z.number().int().nonnegative()
+    })
   })
 );
 
@@ -472,10 +539,148 @@ registry.registerPath({
 
 registry.registerPath({
   method: "get",
+  path: "/api/recipes/{id}/vote",
+  tags: ["Recipes"],
+  summary: "Get recipe vote summary",
+  request: {
+    params: recipeIdParamsSchema
+  },
+  responses: {
+    200: {
+      description: "Recipe vote summary",
+      content: jsonContent(recipeVoteSummarySchema)
+    },
+    ...standardErrorResponses({ includeValidation: true, includeNotFound: true })
+  }
+});
+
+registry.registerPath({
+  method: "put",
+  path: "/api/recipes/{id}/vote",
+  tags: ["Recipes"],
+  summary: "Create or update current user vote",
+  request: {
+    params: recipeIdParamsSchema,
+    body: {
+      description: "Recipe vote payload",
+      required: true,
+      content: jsonContent(setRecipeVoteSchema)
+    }
+  },
+  responses: {
+    200: {
+      description: "Updated recipe vote summary",
+      content: jsonContent(recipeVoteSummarySchema)
+    },
+    ...standardErrorResponses({ includeValidation: true, includeNotFound: true })
+  }
+});
+
+registry.registerPath({
+  method: "delete",
+  path: "/api/recipes/{id}/vote",
+  tags: ["Recipes"],
+  summary: "Clear current user vote",
+  request: {
+    params: recipeIdParamsSchema
+  },
+  responses: {
+    200: {
+      description: "Cleared recipe vote summary",
+      content: jsonContent(recipeVoteSummarySchema)
+    },
+    ...standardErrorResponses({ includeValidation: true, includeNotFound: true })
+  }
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/recipes/{id}/comments",
+  tags: ["Recipes"],
+  summary: "List recipe comments",
+  request: {
+    params: recipeCommentParamsSchema,
+    query: listRecipeCommentsQuerySchema
+  },
+  responses: {
+    200: {
+      description: "Recipe comments",
+      content: jsonContent(recipeCommentListResponseSchema)
+    },
+    ...standardErrorResponses({ includeValidation: true, includeNotFound: true })
+  }
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/api/recipes/{id}/comments",
+  tags: ["Recipes"],
+  summary: "Create recipe comment",
+  request: {
+    params: recipeCommentParamsSchema,
+    body: {
+      description: "Recipe comment payload",
+      required: true,
+      content: jsonContent(createRecipeCommentSchema)
+    }
+  },
+  responses: {
+    201: {
+      description: "Recipe comment created",
+      content: jsonContent(recipeCommentSchema)
+    },
+    ...standardErrorResponses({ includeValidation: true, includeNotFound: true })
+  }
+});
+
+registry.registerPath({
+  method: "patch",
+  path: "/api/recipes/{id}/comments/{commentId}",
+  tags: ["Recipes"],
+  summary: "Update recipe comment",
+  request: {
+    params: recipeCommentIdParamsSchema,
+    body: {
+      description: "Updated recipe comment payload",
+      required: true,
+      content: jsonContent(updateRecipeCommentSchema)
+    }
+  },
+  responses: {
+    200: {
+      description: "Updated recipe comment",
+      content: jsonContent(recipeCommentSchema)
+    },
+    ...standardErrorResponses({ includeValidation: true, includeNotFound: true })
+  }
+});
+
+registry.registerPath({
+  method: "delete",
+  path: "/api/recipes/{id}/comments/{commentId}",
+  tags: ["Recipes"],
+  summary: "Delete recipe comment",
+  request: {
+    params: recipeCommentIdParamsSchema
+  },
+  responses: {
+    200: {
+      description: "Comment deleted",
+      content: jsonContent(z.object({ ok: z.literal(true) }))
+    },
+    ...standardErrorResponses({ includeValidation: true, includeNotFound: true })
+  }
+});
+
+registry.registerPath({
+  method: "get",
   path: "/api/shopping-lists",
   tags: ["Shopping Lists"],
   summary: "List shopping lists",
   description: "Returns shopping lists owned by the authenticated user. Admins can see every list.",
+  request: {
+    query: listShoppingListsQuerySchema
+  },
   responses: {
     200: {
       description: "Shopping list overview",
@@ -633,7 +838,7 @@ export function createOpenApiDocument() {
     tags: [
       { name: "System", description: "Service metadata and health probes" },
       { name: "Auth", description: "Session and authentication-related endpoints" },
-      { name: "Recipes", description: "Recipe catalog endpoints" },
+      { name: "Recipes", description: "Recipe catalog, voting and comments endpoints" },
       { name: "Shopping Lists", description: "Shopping list management endpoints" }
     ]
   });

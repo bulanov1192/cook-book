@@ -15,6 +15,12 @@ type RecipeRecord = {
   status: "draft" | "published" | "private" | "archived";
   createdAt: string;
   updatedAt: string;
+  voteSummary?: {
+    upvoteCount: number;
+    downvoteCount: number;
+    score: number;
+    updatedAt: string;
+  } | null;
   ingredients: Array<{
     id: string;
     name: string;
@@ -59,6 +65,12 @@ export function toRecipeDto(recipe: RecipeRecord, access: AccessContext): Recipe
     isOwner,
     canEdit,
     isPublic: isPublicRecipe(recipe),
+    vote: {
+      upvoteCount: recipe.voteSummary?.upvoteCount ?? 0,
+      downvoteCount: recipe.voteSummary?.downvoteCount ?? 0,
+      score: recipe.voteSummary?.score ?? 0,
+      currentUserVote: null
+    },
     tags: recipe.tagLinks
       .map((tagLink) => tagLink.tag?.name ?? null)
       .filter((tagName): tagName is string => tagName !== null),
@@ -89,10 +101,12 @@ export function toRecipeListItemDto(recipe: RecipeRecord, access: AccessContext)
     isOwner: detailedRecipe.isOwner,
     canEdit: detailedRecipe.canEdit,
     isPublic: detailedRecipe.isPublic,
+    vote: detailedRecipe.vote,
     tags: detailedRecipe.tags,
     createdAt: detailedRecipe.createdAt,
     updatedAt: detailedRecipe.updatedAt,
     ingredientCount: detailedRecipe.ingredients.length,
-    stepCount: detailedRecipe.steps.length
+    stepCount: detailedRecipe.steps.length,
+    commentCount: 0
   };
 }

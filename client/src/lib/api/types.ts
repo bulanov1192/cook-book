@@ -3,6 +3,13 @@ export type UserRole = "user" | "admin";
 export type RecipeStatus = "draft" | "published" | "private" | "archived";
 export type ShoppingListStatus = "active" | "archived";
 export type ShoppingListVisibility = "private" | "public";
+export type RecipeVoteValue = "up" | "down";
+
+export type PaginationMeta = {
+  total: number;
+  limit: number;
+  offset: number;
+};
 
 export type SessionUser = {
   id: string;
@@ -51,6 +58,12 @@ export type Recipe = {
   isOwner: boolean;
   canEdit: boolean;
   isPublic: boolean;
+  vote: {
+    upvoteCount: number;
+    downvoteCount: number;
+    score: number;
+    currentUserVote: RecipeVoteValue | null;
+  };
   tags: string[];
   ingredients: RecipeIngredient[];
   steps: RecipeStep[];
@@ -61,16 +74,38 @@ export type Recipe = {
 export type RecipeListItem = Omit<Recipe, "ingredients" | "steps"> & {
   ingredientCount: number;
   stepCount: number;
+  commentCount: number;
 };
 
 export type RecipeListResponse = {
   items: RecipeListItem[];
-  meta: {
-    total: number;
-    limit: number;
-    offset: number;
-  };
+  meta: PaginationMeta;
 };
+
+export type RecipeCommentAuthor = {
+  id: string;
+  name: string;
+  image: string | null;
+};
+
+export type RecipeComment = {
+  id: string;
+  recipeId: string;
+  author: RecipeCommentAuthor;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+  isEdited: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
+};
+
+export type RecipeCommentListResponse = {
+  items: RecipeComment[];
+  meta: PaginationMeta;
+};
+
+export type RecipeVoteSummary = Recipe["vote"];
 
 export type ShoppingListItem = {
   id: string;
@@ -113,6 +148,7 @@ export type ShoppingListSummary = {
 
 export type ShoppingListListResponse = {
   items: ShoppingListSummary[];
+  meta: PaginationMeta;
 };
 
 export type Tag = {
@@ -170,6 +206,14 @@ export type SignInPayload = {
 
 export type SignUpPayload = SignInPayload & {
   name: string;
+};
+
+export type RecipeCommentPayload = {
+  body: string;
+};
+
+export type RecipeVotePayload = {
+  value: RecipeVoteValue;
 };
 
 export type UpdatePreferencesPayload = {

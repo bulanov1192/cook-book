@@ -4,7 +4,7 @@ export type PaginationOptions = {
 };
 
 const DEFAULT_LIMIT = 20;
-const MAX_LIMIT = 100;
+const MAX_LIMIT = 50;
 
 export function normalizePagination(limit?: number, offset?: number): PaginationOptions {
   const normalizedLimit =
@@ -22,4 +22,3 @@ export function normalizePagination(limit?: number, offset?: number): Pagination
     offset: normalizedOffset
   };
 }
-

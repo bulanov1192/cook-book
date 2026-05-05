@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const recipeStatusSchema = z.enum(["draft", "published", "private", "archived"]);
-export const recipeSortSchema = z.enum(["createdAt", "updatedAt", "title", "totalMinutes"]);
+export const recipeSortSchema = z.enum(["createdAt", "updatedAt", "title", "totalMinutes", "score", "hotness"]);
 export const sortOrderSchema = z.enum(["asc", "desc"]);
 
 export const ingredientInputSchema = z.object({
@@ -46,7 +46,7 @@ export const listRecipesQuerySchema = z.object({
   status: recipeStatusSchema.optional(),
   sort: recipeSortSchema.optional(),
   order: sortOrderSchema.optional(),
-  limit: z.coerce.number().int().min(1).max(100).optional(),
+  limit: z.coerce.number().int().min(1).max(50).optional(),
   offset: z.coerce.number().int().min(0).optional()
 });
 

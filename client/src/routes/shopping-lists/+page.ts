@@ -7,12 +7,17 @@ export const load: PageLoad = async ({ fetch, parent }) => {
   if (!session.isAuthenticated) {
     return {
       lists: {
-        items: []
+        items: [],
+        meta: {
+          total: 0,
+          limit: 50,
+          offset: 0
+        }
       }
     };
   }
 
   return {
-    lists: await listShoppingLists(fetch)
+    lists: await listShoppingLists(fetch, { limit: 50, offset: 0 })
   };
 };

@@ -15,6 +15,7 @@ export const recipeStatusValues = ["draft", "published", "private", "archived"] 
 export const shoppingListStatusValues = ["active", "archived"] as const;
 export const shoppingListVisibilityValues = ["private", "public"] as const;
 export const localeValues = ["en", "ru"] as const;
+export const recipeVoteValues = ["up", "down"] as const;
 
 export const user = pgTable(
   "user",
@@ -129,6 +130,57 @@ export const recipes = pgTable(
   })
 );
 
+export const recipeVoteSummaries = pgTable("recipe_vote_summaries", {
+  recipeId: text("recipe_id")
+    .primaryKey()
+    .references(() => recipes.id, { onDelete: "cascade" }),
+  upvoteCount: integer("upvote_count").notNull().default(0),
+  downvoteCount: integer("downvote_count").notNull().default(0),
+  score: integer("score").notNull().default(0),
+  updatedAt: text("updated_at").notNull()
+});
+
+export const recipeVotes = pgTable(
+  "recipe_votes",
+  {
+    id: text("id").primaryKey(),
+    recipeId: text("recipe_id")
+      .notNull()
+      .references(() => recipes.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    value: text("value", { enum: recipeVoteValues }).notNull(),
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at").notNull()
+  },
+  (table) => ({
+    recipeIdx: index("recipe_votes_recipe_idx").on(table.recipeId),
+    userIdx: index("recipe_votes_user_idx").on(table.userId),
+    recipeUserIdx: uniqueIndex("recipe_votes_recipe_user_idx").on(table.recipeId, table.userId)
+  })
+);
+
+export const recipeComments = pgTable(
+  "recipe_comments",
+  {
+    id: text("id").primaryKey(),
+    recipeId: text("recipe_id")
+      .notNull()
+      .references(() => recipes.id, { onDelete: "cascade" }),
+    authorId: text("author_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    body: text("body").notNull(),
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at").notNull()
+  },
+  (table) => ({
+    recipeCreatedIdx: index("recipe_comments_recipe_created_idx").on(table.recipeId, table.createdAt),
+    authorIdx: index("recipe_comments_author_idx").on(table.authorId)
+  })
+);
+
 export const recipeIngredients = pgTable(
   "recipe_ingredients",
   {
@@ -232,10 +284,45 @@ export const shoppingListItems = pgTable(
   })
 );
 
-export const recipeRelations = relations(recipes, ({ many }) => ({
+export const recipeRelations = relations(recipes, ({ many, one }) => ({
   ingredients: many(recipeIngredients),
   steps: many(recipeSteps),
-  tagLinks: many(recipeTagLinks)
+  tagLinks: many(recipeTagLinks),
+  votes: many(recipeVotes),
+  comments: many(recipeComments),
+  voteSummary: one(recipeVoteSummaries, {
+    fields: [recipes.id],
+    references: [recipeVoteSummaries.recipeId]
+  })
+}));
+
+export const recipeVoteSummaryRelations = relations(recipeVoteSummaries, ({ one }) => ({
+  recipe: one(recipes, {
+    fields: [recipeVoteSummaries.recipeId],
+    references: [recipes.id]
+  })
+}));
+
+export const recipeVoteRelations = relations(recipeVotes, ({ one }) => ({
+  recipe: one(recipes, {
+    fields: [recipeVotes.recipeId],
+    references: [recipes.id]
+  }),
+  author: one(user, {
+    fields: [recipeVotes.userId],
+    references: [user.id]
+  })
+}));
+
+export const recipeCommentRelations = relations(recipeComments, ({ one }) => ({
+  recipe: one(recipes, {
+    fields: [recipeComments.recipeId],
+    references: [recipes.id]
+  }),
+  author: one(user, {
+    fields: [recipeComments.authorId],
+    references: [user.id]
+  })
 }));
 
 export const recipeIngredientRelations = relations(recipeIngredients, ({ one }) => ({

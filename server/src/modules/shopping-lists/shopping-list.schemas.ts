@@ -17,6 +17,11 @@ export const createShoppingListSchema = z.object({
   visibility: shoppingListVisibilitySchema.default("private")
 });
 
+export const listShoppingListsQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(50).optional(),
+  offset: z.coerce.number().int().min(0).optional()
+});
+
 export const createShoppingListItemSchema = z.object({
   name: z.string().trim().min(1).max(120),
   amount: z.number().finite().positive().nullable().optional(),
@@ -42,5 +47,6 @@ export const importRecipeIntoShoppingListSchema = z.object({
 });
 
 export type CreateShoppingListInput = z.infer<typeof createShoppingListSchema>;
+export type ListShoppingListsQuery = z.infer<typeof listShoppingListsQuerySchema>;
 export type CreateShoppingListItemInput = z.infer<typeof createShoppingListItemSchema>;
 export type UpdateShoppingListItemInput = z.infer<typeof updateShoppingListItemSchema>;

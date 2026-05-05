@@ -3,10 +3,11 @@
 
   export let id = "";
   export let name = "";
-  export let value = "";
-  export let placeholder = "";
-  export let rows = 5;
-  export let required = false;
+export let value = "";
+export let placeholder = "";
+export let rows = 5;
+export let required = false;
+export let disabled = false;
 </script>
 
 <textarea
@@ -17,6 +18,7 @@
   {placeholder}
   {rows}
   {required}
+  {disabled}
   on:input
   on:change
 ></textarea>

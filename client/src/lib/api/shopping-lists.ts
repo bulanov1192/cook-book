@@ -1,4 +1,4 @@
-import { loadRequest, request } from "./http";
+import { buildQuery, loadRequest, request } from "./http";
 import type {
   ShoppingList,
   ShoppingListItemPayload,
@@ -6,8 +6,11 @@ import type {
   ShoppingListVisibility
 } from "./types";
 
-export async function listShoppingLists(fetcher: typeof fetch) {
-  return loadRequest<ShoppingListListResponse>(fetcher, "/api/shopping-lists");
+export async function listShoppingLists(
+  fetcher: typeof fetch,
+  params: Record<string, string | number | undefined> = {}
+) {
+  return loadRequest<ShoppingListListResponse>(fetcher, `/api/shopping-lists${buildQuery(params)}`);
 }
 
 export async function getShoppingList(fetcher: typeof fetch, id: string) {

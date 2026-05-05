@@ -1,4 +1,39 @@
 export type RecipeStatus = "draft" | "published" | "private" | "archived";
+export type RecipeVoteValue = "up" | "down";
+
+export type RecipeVoteSummaryDto = {
+  upvoteCount: number;
+  downvoteCount: number;
+  score: number;
+  currentUserVote: RecipeVoteValue | null;
+};
+
+export type RecipeCommentAuthorDto = {
+  id: string;
+  name: string;
+  image: string | null;
+};
+
+export type RecipeCommentDto = {
+  id: string;
+  recipeId: string;
+  author: RecipeCommentAuthorDto;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+  isEdited: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
+};
+
+export type RecipeCommentListResponseDto = {
+  items: RecipeCommentDto[];
+  meta: {
+    total: number;
+    limit: number;
+    offset: number;
+  };
+};
 
 export type RecipeIngredientDto = {
   id: string;
@@ -31,6 +66,7 @@ export type RecipeDto = {
   isOwner: boolean;
   canEdit: boolean;
   isPublic: boolean;
+  vote: RecipeVoteSummaryDto;
   tags: string[];
   ingredients: RecipeIngredientDto[];
   steps: RecipeStepDto[];
@@ -41,4 +77,5 @@ export type RecipeDto = {
 export type RecipeListItemDto = Omit<RecipeDto, "ingredients" | "steps"> & {
   ingredientCount: number;
   stepCount: number;
+  commentCount: number;
 };

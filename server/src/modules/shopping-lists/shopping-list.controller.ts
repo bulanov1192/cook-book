@@ -3,6 +3,7 @@ import {
   createShoppingListItemSchema,
   createShoppingListSchema,
   importRecipeIntoShoppingListSchema,
+  listShoppingListsQuerySchema,
   shoppingListIdParamsSchema,
   shoppingListItemIdParamsSchema,
   updateShoppingListItemSchema
@@ -18,7 +19,8 @@ import {
 } from "./shopping-list.service.js";
 
 export async function listShoppingListsHandler(request: Request, response: Response) {
-  response.json(await getShoppingLists(request.auth));
+  const query = listShoppingListsQuerySchema.parse(request.query);
+  response.json(await getShoppingLists(query, request.auth));
 }
 
 export async function getShoppingListHandler(request: Request, response: Response) {

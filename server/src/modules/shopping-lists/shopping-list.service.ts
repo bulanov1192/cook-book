@@ -4,7 +4,9 @@ import {
   type AccessContext
 } from "../../auth/access.js";
 import { AppError } from "../../shared/errors/app-error.js";
+import { normalizePagination } from "../../shared/http/pagination.js";
 import { getRecipeById } from "../recipes/recipe.repository.js";
+import { canReadRecipe } from "../recipes/recipe.access.js";
 import { toShoppingListDto } from "./shopping-list.mapper.js";
 import {
   addShoppingListItem,
@@ -17,6 +19,7 @@ import {
 import type {
   CreateShoppingListInput,
   CreateShoppingListItemInput,
+  ListShoppingListsQuery,
   UpdateShoppingListItemInput
 } from "./shopping-list.schemas.js";
 
@@ -34,17 +37,6 @@ function canReadShoppingList(
   return list.visibility === "public";
 }
 
-function canReadRecipe(
-  recipe: Pick<RecipeRecord, "ownerId" | "status">,
-  access: AccessContext
-): boolean {
-  if (canManageOwnedEntity(recipe.ownerId, access)) {
-    return true;
-  }
-
-  return recipe.status === "published";
-}
-
 function ensureShoppingListReadable(list: ShoppingListRecord, access: AccessContext) {
   if (!canReadShoppingList(list, access)) {
     throw new AppError(404, "SHOPPING_LIST_NOT_FOUND", `Shopping list ${list.id} was not found`);
@@ -57,15 +49,21 @@ function ensureShoppingListEditable(list: ShoppingListRecord, access: AccessCont
   }
 }
 
-export async function getShoppingLists(access: AccessContext) {
+export async function getShoppingLists(query: ListShoppingListsQuery, access: AccessContext) {
   const authenticatedAccess = requireAuthenticated(access, "Sign in to view your shopping lists");
+  const pagination = normalizePagination(query.limit, query.offset);
   const lists = await listShoppingLists();
   const visibleLists = lists.filter((list) =>
     authenticatedAccess.role === "admin" ? true : list.ownerId === authenticatedAccess.userId
   );
 
+  const pagedLists = visibleLists.slice(
+    pagination.offset,
+    pagination.offset + pagination.limit
+  );
+
   return {
-    items: visibleLists.map((list) => {
+    items: pagedLists.map((list) => {
       const dto = toShoppingListDto(list, authenticatedAccess);
 
       return {
@@ -81,7 +79,12 @@ export async function getShoppingLists(access: AccessContext) {
         createdAt: dto.createdAt,
         updatedAt: dto.updatedAt
       };
-    })
+    }),
+    meta: {
+      total: visibleLists.length,
+      limit: pagination.limit,
+      offset: pagination.offset
+    }
   };
 }
 

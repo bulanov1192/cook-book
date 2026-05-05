@@ -10,6 +10,13 @@
   gap: 0.75rem;
 }
 
+.headerMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .infoGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -71,8 +78,179 @@
   font-weight: 700;
 }
 
+.errorMessage {
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-lg);
+  background: rgba(172, 47, 47, 0.12);
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
+.socialSummary {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1rem;
+  padding: 1rem 1.05rem;
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(135deg, rgba(214, 104, 47, 0.12), rgba(255, 255, 255, 0.54)),
+    rgba(255, 255, 255, 0.58);
+}
+
+.votePanel {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.voteButton {
+  min-width: 4.1rem;
+  height: 3rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--color-text);
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.voteButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(214, 104, 47, 0.28);
+}
+
+.voteButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.voteButtonActive {
+  background: rgba(46, 125, 91, 0.14);
+  border-color: rgba(46, 125, 91, 0.35);
+  color: var(--color-success);
+}
+
+.voteButtonDanger {
+  background: rgba(172, 47, 47, 0.14);
+  border-color: rgba(172, 47, 47, 0.3);
+  color: var(--color-danger);
+}
+
+.voteStats {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.voteLabel {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-soft);
+}
+
+.voteScore {
+  font-size: 1.35rem;
+}
+
+.voteMeta,
+.voteHint {
+  color: var(--color-text-soft);
+}
+
+.commentsSection {
+  display: grid;
+  gap: 1rem;
+}
+
+.commentComposer {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.commentComposerActions,
+.commentEditorActions,
+.commentActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.commentGuestNote,
+.commentEmpty,
+.commentLoadState {
+  color: var(--color-text-soft);
+}
+
+.commentList {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.commentCard {
+  display: grid;
+  grid-template-columns: 4px minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(90, 60, 45, 0.08);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.commentRail {
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(214, 104, 47, 0.72), rgba(214, 104, 47, 0.1));
+}
+
+.commentBody,
+.commentEditor {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.commentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 1rem;
+}
+
+.commentAuthorBlock {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.commentMeta {
+  color: var(--color-text-soft);
+  font-size: 0.92rem;
+}
+
+.commentText {
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.commentLoadState {
+  padding: 0.8rem 1rem 0.1rem;
+  text-align: center;
+  font-weight: 600;
+}
+
 @media (max-width: 720px) {
   .inlineGrid {
     grid-template-columns: 1fr;
+  }
+
+  .votePanel,
+  .commentHeader {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

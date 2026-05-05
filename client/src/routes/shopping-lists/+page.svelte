@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
+  import { onMount } from "svelte";
   import AuthPanel from "$components/auth/AuthPanel/index.svelte";
   import PageIntro from "$components/layout/PageIntro/index.svelte";
   import ShoppingListCard from "$components/shopping-lists/ShoppingListCard/index.svelte";
@@ -9,7 +11,7 @@
   import Input from "$components/ui/Input/index.svelte";
   import Select from "$components/ui/Select/index.svelte";
   import SectionHeader from "$components/ui/SectionHeader/index.svelte";
-  import { createShoppingList } from "$lib/api/shopping-lists";
+  import { createShoppingList, listShoppingLists } from "$lib/api/shopping-lists";
   import { dictionary, formatMessage } from "$lib/i18n";
   import type { ShoppingListSummary, ShoppingListVisibility } from "$lib/api/types";
   import styles from "./+page.module.scss";
@@ -20,10 +22,17 @@
   };
 
   let lists: ShoppingListSummary[] = data.lists.items;
+  let meta = data.lists.meta;
   let listName = "";
   let visibility: ShoppingListVisibility = "private";
   let isSubmitting = false;
+  let isLoadingMore = false;
   let errorMessage = "";
+  let loadMoreError = "";
+  let sentinel: HTMLDivElement | null = null;
+  let observer: IntersectionObserver | null = null;
+
+  $: hasMore = lists.length < meta.total;
 
   function getInputValue(event: Event): string {
     const target = event.currentTarget;
@@ -62,6 +71,10 @@
         },
         ...lists
       ];
+      meta = {
+        ...meta,
+        total: meta.total + 1
+      };
       listName = "";
     } catch (error) {
       errorMessage =
@@ -69,6 +82,65 @@
     } finally {
       isSubmitting = false;
     }
+  }
+
+  async function loadMoreLists() {
+    if (isLoadingMore || !hasMore) {
+      return;
+    }
+
+    isLoadingMore = true;
+    loadMoreError = "";
+
+    try {
+      const nextPage = await listShoppingLists(fetch, {
+        limit: 50,
+        offset: lists.length
+      });
+
+      lists = [...lists, ...nextPage.items];
+      meta = nextPage.meta;
+    } catch (error) {
+      loadMoreError =
+        error instanceof Error ? error.message : $dictionary.shoppingLists.loadMoreFailed;
+    } finally {
+      isLoadingMore = false;
+    }
+  }
+
+  function setupObserver() {
+    observer?.disconnect();
+
+    if (!browser || !sentinel) {
+      return;
+    }
+
+    observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+
+        if (entry?.isIntersecting) {
+          void loadMoreLists();
+        }
+      },
+      {
+        rootMargin: "320px 0px"
+      }
+    );
+
+    observer.observe(sentinel);
+  }
+
+  onMount(() => {
+    setupObserver();
+
+    return () => {
+      observer?.disconnect();
+    };
+  });
+
+  $: if (browser) {
+    setupObserver();
   }
 </script>
 
@@ -116,7 +188,7 @@
   <section class="page-grid">
     {#if data.session.isAuthenticated}
       <SectionHeader
-        title={formatMessage($dictionary.shoppingLists.countTitle, { count: lists.length })}
+        title={formatMessage($dictionary.shoppingLists.countTitle, { count: meta.total })}
         subtitle={$dictionary.shoppingLists.countSubtitle}
       />
 
@@ -126,6 +198,20 @@
             <ShoppingListCard {list} />
           {/each}
         </div>
+
+        {#if loadMoreError}
+          <p class={styles.error}>{loadMoreError}</p>
+        {/if}
+
+        {#if hasMore}
+          <div class={styles.loadState} bind:this={sentinel}>
+            {#if isLoadingMore}
+              {$dictionary.shoppingLists.loadingMore}
+            {:else}
+              {$dictionary.shoppingLists.loadingHint}
+            {/if}
+          </div>
+        {/if}
       {:else}
         <EmptyState
           title={$dictionary.shoppingLists.noListsTitle}

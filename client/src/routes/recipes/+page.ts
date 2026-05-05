@@ -12,7 +12,7 @@ export const load: PageLoad = async ({ fetch, url }) => {
   };
 
   const [recipes, categories, tags] = await Promise.all([
-    listRecipes(fetch, filters),
+    listRecipes(fetch, { ...filters, limit: 50, offset: 0 }),
     getRecipeCategories(fetch),
     getRecipeTags(fetch)
   ]);

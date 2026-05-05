@@ -27,6 +27,13 @@
   font-weight: 700;
 }
 
+.loadState {
+  padding: 0.95rem 1rem;
+  text-align: center;
+  color: var(--color-text-soft);
+  font-weight: 600;
+}
+
 @media (max-width: 720px) {
   .createGrid {
     grid-template-columns: 1fr;

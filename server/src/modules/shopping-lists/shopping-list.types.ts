@@ -25,3 +25,26 @@ export type ShoppingListDto = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type ShoppingListSummaryDto = {
+  id: string;
+  name: string;
+  ownerId: string | null;
+  status: ShoppingListStatus;
+  visibility: ShoppingListVisibility;
+  isOwner: boolean;
+  canEdit: boolean;
+  isPublicReadable: boolean;
+  itemCount: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ShoppingListListResponseDto = {
+  items: ShoppingListSummaryDto[];
+  meta: {
+    total: number;
+    limit: number;
+    offset: number;
+  };
+};

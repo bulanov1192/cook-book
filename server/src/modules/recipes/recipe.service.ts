@@ -1,10 +1,12 @@
 import {
-  canManageOwnedEntity,
   requireAuthenticated,
   type AccessContext
 } from "../../auth/access.js";
 import { AppError } from "../../shared/errors/app-error.js";
+import { attachCommentCountsToRecipes } from "../recipe-comments/recipe-comment.service.js";
 import { normalizePagination } from "../../shared/http/pagination.js";
+import { attachVoteSummariesToRecipes } from "../recipe-votes/recipe-vote.service.js";
+import { canReadRecipe, ensureRecipeEditable, ensureRecipeReadable } from "./recipe.access.js";
 import {
   archiveRecipe,
   createRecipe,
@@ -60,11 +62,24 @@ function compareRecipes(
     result = left.updatedAt.localeCompare(right.updatedAt);
   } else if (sort === "totalMinutes") {
     result = (left.totalMinutes ?? Number.MAX_SAFE_INTEGER) - (right.totalMinutes ?? Number.MAX_SAFE_INTEGER);
+  } else if (sort === "score") {
+    result = left.vote.score - right.vote.score;
+  } else if (sort === "hotness") {
+    result = computeHotness(left) - computeHotness(right);
   } else {
     result = left.createdAt.localeCompare(right.createdAt);
   }
 
   return order === "desc" ? result * -1 : result;
+}
+
+function computeHotness(recipe: Pick<RecipeListItemDto, "vote" | "commentCount" | "updatedAt">) {
+  const updatedAtMs = Date.parse(recipe.updatedAt);
+  const ageHours = Number.isNaN(updatedAtMs)
+    ? 9999
+    : Math.max(1, (Date.now() - updatedAtMs) / (1000 * 60 * 60));
+  const engagement = recipe.vote.score * 3 + recipe.commentCount * 1.5 + recipe.vote.upvoteCount * 0.75;
+  return engagement / Math.pow(ageHours + 2, 0.35);
 }
 
 function ensurePublishableRecipe(input: {
@@ -82,26 +97,6 @@ function ensurePublishableRecipe(input: {
 
   if (!input.steps.length) {
     throw new AppError(400, "VALIDATION_ERROR", "Published recipe requires at least one step");
-  }
-}
-
-function canReadRecipe(recipe: Pick<RecipeRecord, "status" | "ownerId">, access: AccessContext): boolean {
-  if (canManageOwnedEntity(recipe.ownerId, access)) {
-    return true;
-  }
-
-  return recipe.status === "published";
-}
-
-function ensureRecipeReadable(recipe: RecipeRecord, access: AccessContext) {
-  if (!canReadRecipe(recipe, access)) {
-    throw new AppError(404, "RECIPE_NOT_FOUND", `Recipe ${recipe.id} was not found`);
-  }
-}
-
-function ensureRecipeEditable(recipe: RecipeRecord, access: AccessContext) {
-  if (!canManageOwnedEntity(recipe.ownerId, access)) {
-    throw new AppError(403, "RECIPE_FORBIDDEN", "You do not have permission to manage this recipe");
   }
 }
 
@@ -147,13 +142,19 @@ export async function getRecipes(query: ListRecipesQuery, access: AccessContext)
 
       return true;
     })
-    .map((recipe) => toRecipeListItemDto(recipe, access))
-    .sort((left, right) => compareRecipes(left, right, sort, order));
+    .map((recipe) => toRecipeListItemDto(recipe, access));
+
+  const enrichedRecipes = await attachCommentCountsToRecipes(
+    await attachVoteSummariesToRecipes(filteredRecipes, access)
+  );
+
+  const sortedRecipes = enrichedRecipes.sort((left, right) => compareRecipes(left, right, sort, order));
+  const items = sortedRecipes.slice(pagination.offset, pagination.offset + pagination.limit);
 
   return {
-    items: filteredRecipes.slice(pagination.offset, pagination.offset + pagination.limit),
+    items,
     meta: {
-      total: filteredRecipes.length,
+      total: sortedRecipes.length,
       limit: pagination.limit,
       offset: pagination.offset
     }
@@ -168,7 +169,8 @@ export async function getRecipeOrThrow(id: string, access: AccessContext) {
   }
 
   ensureRecipeReadable(recipe, access);
-  return toRecipeDto(recipe, access);
+  const [detailedRecipe] = await attachVoteSummariesToRecipes([toRecipeDto(recipe, access)], access);
+  return detailedRecipe;
 }
 
 export async function createRecipeEntry(input: CreateRecipeInput, access: AccessContext) {
@@ -186,7 +188,8 @@ export async function createRecipeEntry(input: CreateRecipeInput, access: Access
     throw new AppError(500, "RECIPE_CREATE_FAILED", "Recipe could not be created");
   }
 
-  return toRecipeDto(recipe, authenticatedAccess);
+  const [createdRecipe] = await attachVoteSummariesToRecipes([toRecipeDto(recipe, authenticatedAccess)], authenticatedAccess);
+  return createdRecipe;
 }
 
 export async function updateRecipeEntry(id: string, input: UpdateRecipeInput, access: AccessContext) {
@@ -214,7 +217,8 @@ export async function updateRecipeEntry(id: string, input: UpdateRecipeInput, ac
     throw new AppError(500, "RECIPE_UPDATE_FAILED", `Recipe ${id} could not be updated`);
   }
 
-  return toRecipeDto(recipe, access);
+  const [updatedRecipe] = await attachVoteSummariesToRecipes([toRecipeDto(recipe, access)], access);
+  return updatedRecipe;
 }
 
 export async function archiveRecipeEntry(id: string, access: AccessContext) {
@@ -232,7 +236,8 @@ export async function archiveRecipeEntry(id: string, access: AccessContext) {
     throw new AppError(404, "RECIPE_NOT_FOUND", `Recipe ${id} was not found`);
   }
 
-  return toRecipeDto(recipe, access);
+  const [archivedRecipe] = await attachVoteSummariesToRecipes([toRecipeDto(recipe, access)], access);
+  return archivedRecipe;
 }
 
 export async function restoreRecipeEntry(id: string, access: AccessContext) {
@@ -250,7 +255,8 @@ export async function restoreRecipeEntry(id: string, access: AccessContext) {
     throw new AppError(404, "RECIPE_NOT_FOUND", `Recipe ${id} was not found`);
   }
 
-  return toRecipeDto(recipe, access);
+  const [restoredRecipe] = await attachVoteSummariesToRecipes([toRecipeDto(recipe, access)], access);
+  return restoredRecipe;
 }
 
 export async function getRecipeCategories(access: AccessContext) {

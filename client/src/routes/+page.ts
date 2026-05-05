@@ -36,6 +36,6 @@ export const load: PageLoad = async ({ fetch, parent }) => {
     shoppingLists: shoppingListResponse.items.slice(0, 3),
     recipeCount: recipeResponse.meta.total,
     publishedRecipeCount: publishedRecipeResponse.meta.total,
-    shoppingListCount: shoppingListResponse.items.length
+    shoppingListCount: shoppingListResponse.meta.total
   };
 };

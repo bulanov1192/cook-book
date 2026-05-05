@@ -39,6 +39,18 @@
       <p class={styles.description}>{recipe.description}</p>
     {/if}
 
+    <div class={styles.ratingStrip}>
+      <div class={styles.ratingScore}>
+        <span class={styles.ratingLabel}>{$dictionary.recipes.card.rating}</span>
+        <span class={styles.ratingValue}>{recipe.vote.score}</span>
+      </div>
+      <div class={styles.ratingStats}>
+        <span>{formatMessage($dictionary.recipes.card.likes, { count: recipe.vote.upvoteCount })}</span>
+        <span>{formatMessage($dictionary.recipes.card.dislikes, { count: recipe.vote.downvoteCount })}</span>
+        <span>{formatMessage($dictionary.recipes.card.comments, { count: recipe.commentCount })}</span>
+      </div>
+    </div>
+
     <div class={styles.facts}>
       <div class={styles.fact}>
         <span class={styles.factLabel}>{$dictionary.recipes.card.total}</span>

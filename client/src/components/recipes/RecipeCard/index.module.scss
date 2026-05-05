@@ -29,6 +29,45 @@
   line-height: 1.7;
 }
 
+.ratingStrip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(135deg, rgba(214, 104, 47, 0.12), rgba(255, 255, 255, 0.54)),
+    rgba(255, 255, 255, 0.58);
+}
+
+.ratingScore {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+}
+
+.ratingLabel {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-soft);
+}
+
+.ratingValue {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.ratingStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  color: var(--color-text-soft);
+  font-size: 0.95rem;
+}
+
 .facts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));

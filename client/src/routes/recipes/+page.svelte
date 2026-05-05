@@ -1,10 +1,13 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
+  import { onMount } from "svelte";
   import PageIntro from "$components/layout/PageIntro/index.svelte";
   import RecipeCard from "$components/recipes/RecipeCard/index.svelte";
   import RecipeFilters from "$components/recipes/RecipeFilters/index.svelte";
   import Button from "$components/ui/Button/index.svelte";
   import EmptyState from "$components/ui/EmptyState/index.svelte";
   import SectionHeader from "$components/ui/SectionHeader/index.svelte";
+  import { listRecipes } from "$lib/api/recipes";
   import { dictionary, formatMessage } from "$lib/i18n";
   import styles from "./+page.module.scss";
 
@@ -21,6 +24,75 @@
     categories: string[];
     tags: string[];
   };
+
+  let recipes = data.recipes.items;
+  let meta = data.recipes.meta;
+  let isLoadingMore = false;
+  let loadMoreError = "";
+  let sentinel: HTMLDivElement | null = null;
+  let observer: IntersectionObserver | null = null;
+
+  $: hasMore = recipes.length < meta.total;
+
+  async function loadMoreRecipes() {
+    if (isLoadingMore || !hasMore) {
+      return;
+    }
+
+    isLoadingMore = true;
+    loadMoreError = "";
+
+    try {
+      const nextPage = await listRecipes(fetch, {
+        ...data.filters,
+        limit: 50,
+        offset: recipes.length
+      });
+
+      recipes = [...recipes, ...nextPage.items];
+      meta = nextPage.meta;
+    } catch (error) {
+      loadMoreError =
+        error instanceof Error ? error.message : $dictionary.recipes.loadMoreFailed;
+    } finally {
+      isLoadingMore = false;
+    }
+  }
+
+  function setupObserver() {
+    observer?.disconnect();
+
+    if (!browser || !sentinel) {
+      return;
+    }
+
+    observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+
+        if (entry?.isIntersecting) {
+          void loadMoreRecipes();
+        }
+      },
+      {
+        rootMargin: "320px 0px"
+      }
+    );
+
+    observer.observe(sentinel);
+  }
+
+  onMount(() => {
+    setupObserver();
+
+    return () => {
+      observer?.disconnect();
+    };
+  });
+
+  $: if (browser) {
+    setupObserver();
+  }
 </script>
 
 <div class={styles.page}>
@@ -36,16 +108,30 @@
 
   <section class="page-grid">
     <SectionHeader
-      title={formatMessage($dictionary.recipes.foundTitle, { count: data.recipes.meta.total })}
+      title={formatMessage($dictionary.recipes.foundTitle, { count: meta.total })}
       subtitle={$dictionary.recipes.foundSubtitle}
     />
 
-    {#if data.recipes.items.length}
+    {#if recipes.length}
       <div class={styles.grid}>
-        {#each data.recipes.items as recipe}
+        {#each recipes as recipe}
           <RecipeCard {recipe} />
         {/each}
       </div>
+
+      {#if loadMoreError}
+        <p class={styles.loadStateError}>{loadMoreError}</p>
+      {/if}
+
+      {#if hasMore}
+        <div class={styles.loadState} bind:this={sentinel}>
+          {#if isLoadingMore}
+            {$dictionary.recipes.loadingMore}
+          {:else}
+            {$dictionary.recipes.loadingHint}
+          {/if}
+        </div>
+      {/if}
     {:else}
       <EmptyState
         title={$dictionary.recipes.noMatchTitle}
