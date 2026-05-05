@@ -2,6 +2,7 @@
   import Badge from "$components/ui/Badge/index.svelte";
   import Button from "$components/ui/Button/index.svelte";
   import Card from "$components/ui/Card/index.svelte";
+  import { dictionary, formatMessage } from "$lib/i18n";
   import type { ShoppingListSummary } from "$lib/api/types";
   import { formatDate, formatShoppingListStatus, formatShoppingListVisibility } from "$utils/format";
   import styles from "./index.module.scss";
@@ -19,7 +20,11 @@
       <div>
         <h3 class={styles.title}>{list.name}</h3>
         <p class={styles.meta}>
-          Updated {formatDate(list.updatedAt)} · {list.itemCount} items · {formatShoppingListVisibility(list.visibility)}
+          {formatMessage($dictionary.shoppingLists.card.updated, {
+            date: formatDate(list.updatedAt),
+            count: list.itemCount,
+            visibility: formatShoppingListVisibility(list.visibility)
+          })}
         </p>
       </div>
 
@@ -27,7 +32,7 @@
     </div>
 
     <div class={styles.actions}>
-      <Button href={`/shopping-lists/${list.id}`}>Open list</Button>
+      <Button href={`/shopping-lists/${list.id}`}>{$dictionary.shoppingLists.card.open}</Button>
     </div>
   </article>
 </Card>

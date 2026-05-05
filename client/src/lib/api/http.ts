@@ -1,7 +1,7 @@
 import { env } from "$env/dynamic/public";
 import type { ApiErrorPayload } from "./types";
 
-const API_BASE_URL = env.PUBLIC_API_BASE_URL || "http://localhost:3000";
+const API_BASE_URL = env.PUBLIC_API_BASE_URL?.trim() || "";
 
 export class ApiError extends Error {
   status: number;
@@ -18,7 +18,7 @@ export class ApiError extends Error {
 }
 
 function createUrl(path: string): string {
-  return `${API_BASE_URL}${path}`;
+  return API_BASE_URL ? `${API_BASE_URL}${path}` : path;
 }
 
 async function parseResponse<T>(response: Response): Promise<T> {

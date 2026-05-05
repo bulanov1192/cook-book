@@ -20,6 +20,7 @@
     ShoppingList,
     ShoppingListItemPayload
   } from "$lib/api/types";
+  import { dictionary, formatMessage } from "$lib/i18n";
   import { formatShoppingListStatus, formatShoppingListVisibility } from "$utils/format";
   import styles from "./+page.module.scss";
 
@@ -50,7 +51,7 @@
 
   async function handleAddItem() {
     if (!draftItem.name?.trim()) {
-      errorMessage = "Item name is required.";
+      errorMessage = $dictionary.shoppingLists.detail.itemNameRequired;
       return;
     }
 
@@ -70,9 +71,10 @@
         note: null,
         checked: false
       };
-      message = "Item added to the list.";
+      message = $dictionary.shoppingLists.detail.itemAdded;
     } catch (error) {
-      errorMessage = error instanceof Error ? error.message : "Could not add the item.";
+      errorMessage =
+        error instanceof Error ? error.message : $dictionary.shoppingLists.detail.itemAddFailed;
     } finally {
       isSubmitting = false;
     }
@@ -90,17 +92,17 @@
     message = "";
     errorMessage = "";
     list = await importRecipeToShoppingList(list.id, recipeId);
-    message = "Recipe ingredients imported into the shopping list.";
+    message = $dictionary.shoppingLists.detail.importMessage;
   }
 </script>
 
 <div class={styles.page}>
   <PageIntro
-    eyebrow="Shopping list detail"
+    eyebrow={$dictionary.shoppingLists.detail.eyebrow}
     title={list.name}
     description={list.canEdit
-      ? "A focused ingredient workspace: add items manually, import from recipes, and mark things done as you move through the list."
-      : "This list is shared in read-only mode. You can inspect the contents, but only the owner or an admin can edit it."}
+      ? $dictionary.shoppingLists.detail.descriptionEditable
+      : $dictionary.shoppingLists.detail.descriptionReadOnly}
   >
     <div class={styles.badges}>
       <Badge variant={statusVariant}>{formatShoppingListStatus(list.status)}</Badge>
@@ -117,27 +119,30 @@
   {#if list.canEdit}
     <Card>
       <div class={styles.addForm}>
-        <SectionHeader title="Add an item" subtitle="Useful for extras that do not belong to a recipe yet." />
+        <SectionHeader
+          title={$dictionary.shoppingLists.detail.addItemTitle}
+          subtitle={$dictionary.shoppingLists.detail.addItemSubtitle}
+        />
 
         <form class={styles.grid} on:submit|preventDefault={handleAddItem}>
-          <Field label="Item name">
-            <Input value={draftItem.name ?? ""} placeholder="Olive oil" on:input={(event) => (draftItem = { ...draftItem, name: getInputValue(event) })} />
+          <Field label={$dictionary.shoppingLists.detail.itemName}>
+            <Input value={draftItem.name ?? ""} placeholder={$dictionary.shoppingLists.detail.itemNamePlaceholder} on:input={(event) => (draftItem = { ...draftItem, name: getInputValue(event) })} />
           </Field>
 
-          <Field label="Amount" optional={true}>
-            <Input type="number" min={0} step="0.1" value={draftItem.amount ?? ""} placeholder="1" on:input={(event) => (draftItem = { ...draftItem, amount: getInputValue(event) ? Number(getInputValue(event)) : null })} />
+          <Field label={$dictionary.shoppingLists.detail.amount} optional={true}>
+            <Input type="number" min={0} step="0.1" value={draftItem.amount ?? ""} placeholder={$dictionary.shoppingLists.detail.amountPlaceholder} on:input={(event) => (draftItem = { ...draftItem, amount: getInputValue(event) ? Number(getInputValue(event)) : null })} />
           </Field>
 
-          <Field label="Unit" optional={true}>
-            <Input value={draftItem.unit ?? ""} placeholder="bottle" on:input={(event) => (draftItem = { ...draftItem, unit: getInputValue(event) || null })} />
+          <Field label={$dictionary.shoppingLists.detail.unit} optional={true}>
+            <Input value={draftItem.unit ?? ""} placeholder={$dictionary.shoppingLists.detail.unitPlaceholder} on:input={(event) => (draftItem = { ...draftItem, unit: getInputValue(event) || null })} />
           </Field>
 
-          <Field label="Note" optional={true}>
-            <Input value={draftItem.note ?? ""} placeholder="extra virgin" on:input={(event) => (draftItem = { ...draftItem, note: getInputValue(event) || null })} />
+          <Field label={$dictionary.shoppingLists.detail.note} optional={true}>
+            <Input value={draftItem.note ?? ""} placeholder={$dictionary.shoppingLists.detail.notePlaceholder} on:input={(event) => (draftItem = { ...draftItem, note: getInputValue(event) || null })} />
           </Field>
 
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Adding..." : "Add item"}
+            {isSubmitting ? $dictionary.shoppingLists.detail.adding : $dictionary.shoppingLists.detail.addItem}
           </Button>
         </form>
 
@@ -153,7 +158,12 @@
   {/if}
 
   <Card>
-    <SectionHeader title={`Items: ${list.items.length}`} subtitle="Check them off or remove them as the list changes." />
+    <SectionHeader
+      title={formatMessage($dictionary.shoppingLists.detail.itemsTitle, {
+        count: list.items.length
+      })}
+      subtitle={$dictionary.shoppingLists.detail.itemsSubtitle}
+    />
 
     {#if list.items.length}
       <div class={styles.items}>
@@ -168,8 +178,8 @@
       </div>
     {:else}
       <EmptyState
-        title="This shopping list is empty"
-        description="Add a few manual items or import ingredients from a recipe to make the list useful."
+        title={$dictionary.shoppingLists.detail.emptyTitle}
+        description={$dictionary.shoppingLists.detail.emptyDescription}
       />
     {/if}
   </Card>

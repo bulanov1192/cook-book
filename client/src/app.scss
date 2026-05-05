@@ -1,8 +1,25 @@
 @use "@fontsource-variable/fraunces";
+@use "@fontsource-variable/cormorant-garamond";
 @use "@fontsource-variable/manrope";
 
 :root {
   color-scheme: light;
+  --font-body: "Manrope Variable", sans-serif;
+  --font-display: "Fraunces Variable", serif;
+  --font-display-cyrillic: "Cormorant Garamond Variable", serif;
+  --display-weight: 600;
+  --display-tracking: -0.03em;
+  --eyebrow-tracking: 0.18em;
+  --page-intro-title-size: clamp(2rem, 5vw, 3.8rem);
+  --page-intro-title-line: 0.98;
+  --page-intro-title-max: 12ch;
+  --shell-title-size: clamp(1.8rem, 4vw, 2.5rem);
+  --shell-title-line: 1.02;
+  --section-title-size: clamp(1.45rem, 3vw, 2.1rem);
+  --section-title-line: 1.02;
+  --card-title-line: 1.02;
+  --auth-title-line: 1.05;
+  --cta-title-line: 1.1;
   --color-bg: #f7efe6;
   --color-bg-soft: #fef9f2;
   --color-surface: rgba(255, 248, 239, 0.88);
@@ -23,6 +40,23 @@
   --page-max-width: 1400px;
 }
 
+:root[data-locale="ru"] {
+  --font-display: var(--font-display-cyrillic);
+  --display-weight: 560;
+  --display-tracking: -0.018em;
+  --eyebrow-tracking: 0.15em;
+  --page-intro-title-size: clamp(1.86rem, 4.35vw, 3.35rem);
+  --page-intro-title-line: 1.04;
+  --page-intro-title-max: 13.5ch;
+  --shell-title-size: clamp(1.68rem, 3.55vw, 2.18rem);
+  --shell-title-line: 1.08;
+  --section-title-size: clamp(1.34rem, 2.75vw, 1.92rem);
+  --section-title-line: 1.08;
+  --card-title-line: 1.08;
+  --auth-title-line: 1.1;
+  --cta-title-line: 1.14;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -35,7 +69,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-body);
   background:
     radial-gradient(circle at top left, rgba(216, 165, 111, 0.32), transparent 28%),
     radial-gradient(circle at top right, rgba(200, 93, 43, 0.12), transparent 25%),
@@ -45,9 +79,9 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
-  font-family: "Fraunces Variable", serif;
-  font-weight: 600;
-  letter-spacing: -0.03em;
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
 }
 
 p {

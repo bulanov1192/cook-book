@@ -2,6 +2,7 @@
   import Badge from "$components/ui/Badge/index.svelte";
   import Button from "$components/ui/Button/index.svelte";
   import Card from "$components/ui/Card/index.svelte";
+  import { dictionary, formatMessage } from "$lib/i18n";
   import type { RecipeListItem } from "$lib/api/types";
   import { formatDate, formatMinutes, formatRecipeStatus } from "$utils/format";
   import styles from "./index.module.scss";
@@ -26,7 +27,8 @@
       <div class={styles.titleBlock}>
         <h3 class={styles.title}>{recipe.title}</h3>
         <p class={styles.meta}>
-          {recipe.category ?? "Uncategorized"} · Updated {formatDate(recipe.updatedAt)}
+          {recipe.category ?? $dictionary.recipes.card.uncategorized} ·
+          {formatMessage($dictionary.recipes.card.updated, { date: formatDate(recipe.updatedAt) })}
         </p>
       </div>
 
@@ -39,19 +41,19 @@
 
     <div class={styles.facts}>
       <div class={styles.fact}>
-        <span class={styles.factLabel}>Total</span>
+        <span class={styles.factLabel}>{$dictionary.recipes.card.total}</span>
         <span class={styles.factValue}>{formatMinutes(recipe.totalMinutes)}</span>
       </div>
       <div class={styles.fact}>
-        <span class={styles.factLabel}>Servings</span>
+        <span class={styles.factLabel}>{$dictionary.recipes.card.servings}</span>
         <span class={styles.factValue}>{recipe.servings}</span>
       </div>
       <div class={styles.fact}>
-        <span class={styles.factLabel}>Ingredients</span>
+        <span class={styles.factLabel}>{$dictionary.recipes.card.ingredients}</span>
         <span class={styles.factValue}>{recipe.ingredientCount}</span>
       </div>
       <div class={styles.fact}>
-        <span class={styles.factLabel}>Steps</span>
+        <span class={styles.factLabel}>{$dictionary.recipes.card.steps}</span>
         <span class={styles.factValue}>{recipe.stepCount}</span>
       </div>
     </div>
@@ -65,9 +67,11 @@
     {/if}
 
     <div class={styles.actions}>
-      <Button href={`/recipes/${recipe.id}`}>Open recipe</Button>
+      <Button href={`/recipes/${recipe.id}`}>{$dictionary.recipes.card.open}</Button>
       {#if recipe.canEdit}
-        <Button href={`/recipes/${recipe.id}/edit`} variant="secondary">Edit</Button>
+        <Button href={`/recipes/${recipe.id}/edit`} variant="secondary">
+          {$dictionary.recipes.card.edit}
+        </Button>
       {/if}
     </div>
   </article>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { dictionary } from "$lib/i18n";
   import styles from "./index.module.scss";
 
   export let label = "";
@@ -12,7 +13,7 @@
     <span class={styles.labelRow}>
       <span class={styles.label}>{label}</span>
       {#if optional}
-        <span class={styles.optional}>Optional</span>
+        <span class={styles.optional}>{$dictionary.common.optional}</span>
       {/if}
     </span>
   {/if}

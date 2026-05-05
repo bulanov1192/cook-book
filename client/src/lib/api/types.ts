@@ -1,3 +1,4 @@
+export type Locale = "en" | "ru";
 export type UserRole = "user" | "admin";
 export type RecipeStatus = "draft" | "published" | "private" | "archived";
 export type ShoppingListStatus = "active" | "archived";
@@ -8,6 +9,7 @@ export type SessionUser = {
   email: string;
   name: string;
   role: UserRole;
+  locale: Locale;
 };
 
 export type SessionResponse = {
@@ -168,6 +170,10 @@ export type SignInPayload = {
 
 export type SignUpPayload = SignInPayload & {
   name: string;
+};
+
+export type UpdatePreferencesPayload = {
+  locale: Locale;
 };
 
 export type ApiErrorPayload = {

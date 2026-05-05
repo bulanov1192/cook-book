@@ -10,6 +10,7 @@
 
 .title {
   font-size: clamp(1.45rem, 3vw, 1.8rem);
+  line-height: var(--auth-title-line);
 }
 
 .description {

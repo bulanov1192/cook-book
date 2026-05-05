@@ -2,43 +2,57 @@
   import { BookOpenText, ChartNoAxesCombined, CookingPot, LogOut, ShoppingBasket } from "lucide-svelte";
   import { goto, invalidateAll } from "$app/navigation";
   import { page } from "$app/stores";
-  import { signOut } from "$lib/api/auth";
-  import type { SessionResponse } from "$lib/api/types";
+  import { signOut, updatePreferences } from "$lib/api/auth";
+  import { dictionary, formatMessage, locale, persistLocale } from "$lib/i18n";
+  import type { Locale, SessionResponse } from "$lib/api/types";
   import Badge from "$components/ui/Badge/index.svelte";
   import Button from "$components/ui/Button/index.svelte";
+  import Field from "$components/ui/Field/index.svelte";
+  import Select from "$components/ui/Select/index.svelte";
   import styles from "./index.module.scss";
 
   export let session: SessionResponse;
 
-  const navigation = [
+  $: currentPath = $page.url.pathname;
+  let isSigningOut = false;
+  let isUpdatingLocale = false;
+  let selectedLocale: Locale = "en";
+
+  $: selectedLocale = $locale;
+  $: navigation = [
     {
       href: "/",
-      label: "Dashboard",
-      hint: "Overview and highlights",
+      label: $dictionary.nav.dashboard,
+      hint: $dictionary.nav.dashboardHint,
       icon: ChartNoAxesCombined
     },
     {
       href: "/recipes",
-      label: "Recipes",
-      hint: "Catalog and filters",
+      label: $dictionary.nav.recipes,
+      hint: $dictionary.nav.recipesHint,
       icon: CookingPot
     },
     {
       href: "/shopping-lists",
-      label: "Shopping Lists",
-      hint: "Plan and track ingredients",
+      label: $dictionary.nav.shoppingLists,
+      hint: $dictionary.nav.shoppingListsHint,
       icon: ShoppingBasket
     },
     {
       href: "/recipes/new",
-      label: "New Recipe",
-      hint: "Add something fresh",
+      label: $dictionary.nav.newRecipe,
+      hint: $dictionary.nav.newRecipeHint,
       icon: BookOpenText
     }
   ];
 
-  $: currentPath = $page.url.pathname;
-  let isSigningOut = false;
+  const languageOptions = [
+    { value: "en", label: "🇬🇧 EN" },
+    { value: "ru", label: "🇷🇺 RU" }
+  ];
+
+  $: roleLabel =
+    session.user?.role === "admin" ? $dictionary.common.adminRole : $dictionary.common.userRole;
 
   function isNavActive(href: string, pathname: string): boolean {
     if (href === "/") {
@@ -71,19 +85,47 @@
       isSigningOut = false;
     }
   }
+
+  async function handleLocaleChange(event: Event) {
+    const target = event.currentTarget;
+
+    if (!(target instanceof HTMLSelectElement)) {
+      return;
+    }
+
+    const nextLocale = target.value as Locale;
+
+    if (nextLocale === $locale) {
+      return;
+    }
+
+    isUpdatingLocale = true;
+
+    try {
+      if (session.isAuthenticated) {
+        await updatePreferences({
+          locale: nextLocale
+        });
+      }
+
+      persistLocale(nextLocale);
+    } finally {
+      isUpdatingLocale = false;
+    }
+  }
 </script>
 
 <div class={styles.shell}>
   <aside class={styles.sidebar}>
     <div class={styles.brand}>
-      <span class={styles.eyebrow}>Recipe book</span>
-      <h1 class={styles.title}>Warm, structured cooking notes for everyday use.</h1>
+      <span class={styles.eyebrow}>{$dictionary.shell.eyebrow}</span>
+      <h1 class={styles.title}>{$dictionary.shell.title}</h1>
       <p class={styles.subtitle}>
-        A calm kitchen workspace for building your own recipe catalog and turning it into shopping lists.
+        {$dictionary.shell.subtitle}
       </p>
     </div>
 
-    <nav class={styles.nav} aria-label="Main navigation">
+    <nav class={styles.nav} aria-label={$dictionary.nav.mainNavigation}>
       {#each navigation as item}
         <a
           class={`${styles.navLink} ${isNavActive(item.href, currentPath) ? styles.navLinkActive : ""}`}
@@ -99,19 +141,28 @@
     </nav>
 
     <section class={styles.cta}>
-      <h2 class={styles.ctaTitle}>Keep the flow simple.</h2>
+      <h2 class={styles.ctaTitle}>{$dictionary.shell.ctaTitle}</h2>
       <p class={styles.ctaCopy}>
-        Add recipes in drafts first, publish them when they feel ready, then pull ingredients straight into your list.
+        {$dictionary.shell.ctaCopy}
       </p>
-      <Button href="/recipes/new">Create recipe</Button>
+      <Button href="/recipes/new">{$dictionary.recipes.createRecipe}</Button>
     </section>
 
     <section class={styles.account}>
+      <Field label={$dictionary.common.language}>
+        <Select
+          value={selectedLocale}
+          options={languageOptions}
+          disabled={isUpdatingLocale}
+          on:change={handleLocaleChange}
+        />
+      </Field>
+
       {#if session.isAuthenticated && session.user}
         <div class={styles.accountHeader}>
-          <span class={styles.accountEyebrow}>Signed in</span>
+          <span class={styles.accountEyebrow}>{$dictionary.common.signedIn}</span>
           <Badge variant={session.user.role === "admin" ? "danger" : "neutral"}>
-            {session.user.role}
+            {roleLabel}
           </Badge>
         </div>
         <div class={styles.accountBody}>
@@ -120,14 +171,14 @@
         </div>
         <Button variant="ghost" size="sm" on:click={handleSignOut} disabled={isSigningOut}>
           <LogOut size={16} />
-          {isSigningOut ? "Signing out..." : "Sign out"}
+          {isSigningOut ? $dictionary.common.signingOut : $dictionary.common.signOut}
         </Button>
       {:else}
         <div class={styles.accountBody}>
-          <strong>Guest mode</strong>
-          <span>Public recipes and shared lists stay open. Create and manage your own content after sign in.</span>
+          <strong>{$dictionary.common.guestMode}</strong>
+          <span>{$dictionary.shell.guestCopy}</span>
         </div>
-        <Button href="/" variant="secondary" size="sm">Sign in</Button>
+        <Button href="/" variant="secondary" size="sm">{$dictionary.common.signIn}</Button>
       {/if}
     </section>
   </aside>

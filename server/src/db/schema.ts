@@ -11,6 +11,7 @@ import {
 export const recipeStatusValues = ["draft", "published", "private", "archived"] as const;
 export const shoppingListStatusValues = ["active", "archived"] as const;
 export const shoppingListVisibilityValues = ["private", "public"] as const;
+export const localeValues = ["en", "ru"] as const;
 
 export const user = sqliteTable(
   "user",
@@ -20,6 +21,7 @@ export const user = sqliteTable(
     email: text("email").notNull(),
     emailVerified: integer("emailVerified", { mode: "boolean" }).notNull().default(false),
     image: text("image"),
+    locale: text("locale", { enum: localeValues }).notNull().default("en"),
     role: text("role").default("user"),
     banned: integer("banned", { mode: "boolean" }).default(false),
     banReason: text("banReason"),

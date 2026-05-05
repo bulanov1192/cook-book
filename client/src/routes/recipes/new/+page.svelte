@@ -4,6 +4,7 @@
   import PageIntro from "$components/layout/PageIntro/index.svelte";
   import RecipeForm from "$components/recipes/RecipeForm/index.svelte";
   import { createRecipe } from "$lib/api/recipes";
+  import { dictionary } from "$lib/i18n";
   import type { RecipePayload } from "$lib/api/types";
   import styles from "./+page.module.scss";
 
@@ -19,17 +20,17 @@
 
 <div class={styles.page}>
   <PageIntro
-    eyebrow="Create recipe"
-    title="Start simple, then shape the recipe as it gets used."
-    description="Drafts are welcome here. Keep the structure clean, then publish the recipe once the ingredient list and method feel solid."
+    eyebrow={$dictionary.recipes.create.eyebrow}
+    title={$dictionary.recipes.create.title}
+    description={$dictionary.recipes.create.description}
   />
 
   {#if data.session.isAuthenticated}
-    <RecipeForm submitLabel="Save recipe" onSubmit={handleSubmit} />
+    <RecipeForm submitLabel={$dictionary.recipes.form.saveRecipe} onSubmit={handleSubmit} />
   {:else}
     <AuthPanel
-      title="Sign in before creating a recipe"
-      description="Recipe creation is private to your account by default, so this step needs authentication first."
+      title={$dictionary.recipes.create.authTitle}
+      description={$dictionary.recipes.create.authDescription}
     />
   {/if}
 </div>

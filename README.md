@@ -93,6 +93,45 @@ A full-stack web application for managing recipes and shopping lists, built with
 
 3. Open your browser and navigate to `http://localhost:5173`
 
+## Docker
+
+The project includes production-oriented Docker setup for:
+
+- `server`: Express API with SQLite stored on a persistent Docker volume
+- `client`: SvelteKit app built with `@sveltejs/adapter-node`
+- `caddy`: reverse proxy that serves the frontend and forwards `/api`, `/docs`, and `/openapi.json`
+
+### Start with Docker Compose
+
+```bash
+docker compose up --build
+```
+
+The app will be available at `http://localhost`.
+
+### Stop and remove containers
+
+```bash
+docker compose down
+```
+
+To remove the SQLite volume too:
+
+```bash
+docker compose down -v
+```
+
+### Important environment values
+
+The default compose file is safe for local testing, but before any real deployment you should change:
+
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL`
+- `CORS_ORIGIN`
+- `CADDY_SITE_ADDRESS`
+
+SQLite data is persisted in the `server_data` Docker volume and mounted inside the backend container at `/app/data`.
+
 ## API Documentation
 
 When the server is running, visit `http://localhost:3000/docs` to view the interactive API documentation powered by Swagger UI.

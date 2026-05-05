@@ -5,13 +5,13 @@
   import Field from "$components/ui/Field/index.svelte";
   import Input from "$components/ui/Input/index.svelte";
   import { signIn, signUp } from "$lib/api/auth";
+  import { dictionary } from "$lib/i18n";
   import styles from "./index.module.scss";
 
   type Mode = "sign-in" | "sign-up";
 
-  export let title = "Sign in to continue";
-  export let description =
-    "Authentication unlocks private drafts, your own shopping lists and editing tools across the app.";
+  export let title = "";
+  export let description = "";
   export let onSuccess: (() => Promise<void> | void) | undefined = undefined;
 
   let mode: Mode = "sign-in";
@@ -20,6 +20,9 @@
   let password = "";
   let isSubmitting = false;
   let errorMessage = "";
+
+  $: resolvedTitle = title || $dictionary.auth.defaultTitle;
+  $: resolvedDescription = description || $dictionary.auth.defaultDescription;
 
   function getInputValue(event: Event): string {
     const target = event.currentTarget;
@@ -47,7 +50,7 @@
       await invalidateAll();
       await onSuccess?.();
     } catch (error) {
-      errorMessage = error instanceof Error ? error.message : "Authentication failed.";
+      errorMessage = error instanceof Error ? error.message : $dictionary.auth.authFailed;
     } finally {
       isSubmitting = false;
     }
@@ -57,8 +60,8 @@
 <Card>
   <div class={styles.panel}>
     <div class={styles.copy}>
-      <h2 class={styles.title}>{title}</h2>
-      <p class={styles.description}>{description}</p>
+      <h2 class={styles.title}>{resolvedTitle}</h2>
+      <p class={styles.description}>{resolvedDescription}</p>
     </div>
 
     <div class={styles.modeSwitch}>
@@ -67,38 +70,41 @@
         type="button"
         on:click={() => (mode = "sign-in")}
       >
-        Sign in
+        {$dictionary.auth.modeSignIn}
       </button>
       <button
         class={`${styles.modeButton} ${mode === "sign-up" ? styles.modeButtonActive : ""}`}
         type="button"
         on:click={() => (mode = "sign-up")}
       >
-        Create account
+        {$dictionary.auth.modeSignUp}
       </button>
     </div>
 
     <form class={styles.form} on:submit|preventDefault={handleSubmit}>
       {#if mode === "sign-up"}
-        <Field label="Name">
+        <Field label={$dictionary.auth.nameLabel}>
           <Input
             value={name}
-            placeholder="Kitchen owner"
+            placeholder={$dictionary.auth.namePlaceholder}
             on:input={(event) => (name = getInputValue(event))}
           />
         </Field>
       {/if}
 
-      <Field label="Email">
+      <Field label={$dictionary.auth.emailLabel}>
         <Input
           type="email"
           value={email}
-          placeholder="chef@example.com"
+          placeholder={$dictionary.auth.emailPlaceholder}
           on:input={(event) => (email = getInputValue(event))}
         />
       </Field>
 
-      <Field label="Password" hint={mode === "sign-up" ? "Use at least 8 characters." : ""}>
+      <Field
+        label={$dictionary.auth.passwordLabel}
+        hint={mode === "sign-up" ? $dictionary.auth.passwordHint : ""}
+      >
         <Input
           type="password"
           value={password}
@@ -114,11 +120,11 @@
       <Button type="submit" disabled={isSubmitting}>
         {isSubmitting
           ? mode === "sign-up"
-            ? "Creating account..."
-            : "Signing in..."
+            ? $dictionary.common.creatingAccount
+            : $dictionary.auth.signingIn
           : mode === "sign-up"
-            ? "Create account"
-            : "Sign in"}
+            ? $dictionary.common.createAccount
+            : $dictionary.common.signIn}
       </Button>
     </form>
   </div>

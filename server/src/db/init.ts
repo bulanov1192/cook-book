@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS user (
   email TEXT NOT NULL UNIQUE,
   emailVerified INTEGER NOT NULL DEFAULT 0,
   image TEXT,
+  locale TEXT NOT NULL DEFAULT 'en',
   role TEXT DEFAULT 'user',
   banned INTEGER DEFAULT 0,
   banReason TEXT,
@@ -177,6 +178,7 @@ export function initializeDatabase(): void {
   ensureColumn("shopping_lists", "owner_id", "owner_id TEXT");
   ensureColumn("shopping_lists", "visibility", "visibility TEXT NOT NULL DEFAULT 'private'");
   ensureColumn("user", "role", "role TEXT DEFAULT 'user'");
+  ensureColumn("user", "locale", "locale TEXT NOT NULL DEFAULT 'en'");
   ensureColumn("user", "banned", "banned INTEGER DEFAULT 0");
   ensureColumn("user", "banReason", "banReason TEXT");
   ensureColumn("user", "banExpires", "banExpires TEXT");

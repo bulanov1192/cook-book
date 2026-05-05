@@ -28,13 +28,14 @@
 
 .eyebrow {
   font-size: 0.78rem;
-  letter-spacing: 0.18em;
+  letter-spacing: var(--eyebrow-tracking);
   text-transform: uppercase;
   color: var(--color-accent);
 }
 
 .title {
-  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-size: var(--shell-title-size);
+  line-height: var(--shell-title-line);
 }
 
 .subtitle {
@@ -97,6 +98,7 @@
 
 .ctaTitle {
   font-size: 1.3rem;
+  line-height: var(--cta-title-line);
 }
 
 .ctaCopy {

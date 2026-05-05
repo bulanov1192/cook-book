@@ -7,6 +7,7 @@
   import Field from "$components/ui/Field/index.svelte";
   import SectionHeader from "$components/ui/SectionHeader/index.svelte";
   import Select from "$components/ui/Select/index.svelte";
+  import { dictionary, formatMessage } from "$lib/i18n";
   import { archiveRecipe, restoreRecipe } from "$lib/api/recipes";
   import { importRecipeToShoppingList } from "$lib/api/shopping-lists";
   import { formatDate, formatMinutes, formatRecipeStatus } from "$utils/format";
@@ -53,7 +54,9 @@
           : await archiveRecipe(recipe.id);
 
       actionMessage =
-        recipe.status === "archived" ? "Recipe archived." : "Recipe restored as draft.";
+        recipe.status === "archived"
+          ? $dictionary.recipes.detail.archivedMessage
+          : $dictionary.recipes.detail.restoredMessage;
     } finally {
       isBusy = false;
     }
@@ -69,7 +72,7 @@
 
     try {
       await importRecipeToShoppingList(selectedListId, recipe.id);
-      actionMessage = "Ingredients were added to the selected shopping list.";
+      actionMessage = $dictionary.recipes.detail.importMessage;
     } finally {
       isBusy = false;
     }
@@ -78,15 +81,17 @@
 
 <div class={styles.page}>
   <PageIntro
-    eyebrow="Recipe detail"
+    eyebrow={$dictionary.recipes.detail.eyebrow}
     title={recipe.title}
-    description={recipe.description ?? "This recipe currently has no description, but the structured ingredient list and method already make it useful."}
+    description={recipe.description ?? $dictionary.recipes.detail.noDescription}
   >
     {#if recipe.canEdit}
       <div class={styles.headerActions}>
-        <Button href={`/recipes/${recipe.id}/edit`}>Edit recipe</Button>
+        <Button href={`/recipes/${recipe.id}/edit`}>{$dictionary.recipes.detail.editRecipe}</Button>
         <Button variant="secondary" on:click={handleArchiveToggle} disabled={isBusy}>
-          {recipe.status === "archived" ? "Restore draft" : "Archive recipe"}
+          {recipe.status === "archived"
+            ? $dictionary.recipes.detail.restoreDraft
+            : $dictionary.recipes.detail.archiveRecipe}
         </Button>
       </div>
     {/if}
@@ -97,29 +102,35 @@
   {/if}
 
   <Card>
-    <SectionHeader title="At a glance" subtitle={`Status: ${formatRecipeStatus(recipe.status)} · Last updated ${formatDate(recipe.updatedAt)}`}>
+    <SectionHeader
+      title={$dictionary.recipes.detail.overviewTitle}
+      subtitle={formatMessage($dictionary.recipes.detail.overviewSubtitle, {
+        status: formatRecipeStatus(recipe.status),
+        date: formatDate(recipe.updatedAt)
+      })}
+    >
       <Badge variant={statusVariant}>{formatRecipeStatus(recipe.status)}</Badge>
     </SectionHeader>
 
     <div class={styles.infoGrid}>
       <div class={styles.infoCard}>
-        <span class={styles.infoLabel}>Category</span>
-        <span class={styles.infoValue}>{recipe.category ?? "Uncategorized"}</span>
+        <span class={styles.infoLabel}>{$dictionary.recipes.detail.category}</span>
+        <span class={styles.infoValue}>{recipe.category ?? $dictionary.recipes.detail.uncategorized}</span>
       </div>
       <div class={styles.infoCard}>
-        <span class={styles.infoLabel}>Servings</span>
+        <span class={styles.infoLabel}>{$dictionary.recipes.detail.servings}</span>
         <span class={styles.infoValue}>{recipe.servings}</span>
       </div>
       <div class={styles.infoCard}>
-        <span class={styles.infoLabel}>Prep</span>
+        <span class={styles.infoLabel}>{$dictionary.recipes.detail.prep}</span>
         <span class={styles.infoValue}>{formatMinutes(recipe.prepMinutes)}</span>
       </div>
       <div class={styles.infoCard}>
-        <span class={styles.infoLabel}>Cook</span>
+        <span class={styles.infoLabel}>{$dictionary.recipes.detail.cook}</span>
         <span class={styles.infoValue}>{formatMinutes(recipe.cookMinutes)}</span>
       </div>
       <div class={styles.infoCard}>
-        <span class={styles.infoLabel}>Total</span>
+        <span class={styles.infoLabel}>{$dictionary.recipes.detail.total}</span>
         <span class={styles.infoValue}>{formatMinutes(recipe.totalMinutes)}</span>
       </div>
     </div>
@@ -127,19 +138,27 @@
 
   {#if data.shoppingLists.length}
     <Card>
-      <SectionHeader title="Send to shopping list" subtitle="Use the API-backed import flow to copy these ingredients into one of your active lists." />
+      <SectionHeader
+        title={$dictionary.recipes.detail.sendToListTitle}
+        subtitle={$dictionary.recipes.detail.sendToListSubtitle}
+      />
       <div class={styles.inlineGrid}>
-        <Field label="Target shopping list">
+        <Field label={$dictionary.recipes.detail.targetList}>
           <Select value={selectedListId} options={shoppingListOptions} on:change={(event) => (selectedListId = getSelectValue(event))} />
         </Field>
-        <Button on:click={handleImport} disabled={!selectedListId || isBusy}>Add ingredients</Button>
+        <Button on:click={handleImport} disabled={!selectedListId || isBusy}>{$dictionary.recipes.detail.addIngredients}</Button>
       </div>
     </Card>
   {/if}
 
   <div class="two-column">
     <Card>
-      <SectionHeader title="Ingredients" subtitle={`${recipe.ingredients.length} structured ingredient lines`} />
+      <SectionHeader
+        title={$dictionary.recipes.detail.ingredientsTitle}
+        subtitle={formatMessage($dictionary.recipes.detail.ingredientsSubtitle, {
+          count: recipe.ingredients.length
+        })}
+      />
       <ul class={styles.list}>
         {#each recipe.ingredients as ingredient}
           <li class={styles.listItem}>
@@ -148,7 +167,7 @@
               · {ingredient.preparationNote}
             {/if}
             {#if ingredient.optional}
-              · optional
+              · {$dictionary.recipes.detail.optionalIngredient}
             {/if}
           </li>
         {/each}
@@ -156,7 +175,12 @@
     </Card>
 
     <Card>
-      <SectionHeader title="Method" subtitle={`${recipe.steps.length} cooking steps`} />
+      <SectionHeader
+        title={$dictionary.recipes.detail.methodTitle}
+        subtitle={formatMessage($dictionary.recipes.detail.methodSubtitle, {
+          count: recipe.steps.length
+        })}
+      />
       <ol class={styles.list}>
         {#each recipe.steps as step}
           <li class={styles.listItem}>{step.instruction}</li>
@@ -166,10 +190,13 @@
   </div>
 
   <Card>
-    <SectionHeader title="Notes and tags" subtitle="Supporting context that helps the recipe stay useful later." />
+    <SectionHeader
+      title={$dictionary.recipes.detail.notesTagsTitle}
+      subtitle={$dictionary.recipes.detail.notesTagsSubtitle}
+    />
 
     <div class="page-grid">
-      <p class={styles.copy}>{recipe.notes ?? "No extra notes yet."}</p>
+      <p class={styles.copy}>{recipe.notes ?? $dictionary.recipes.detail.noNotes}</p>
 
       {#if recipe.tags.length}
         <div class={styles.tags}>

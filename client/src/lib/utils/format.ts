@@ -1,8 +1,11 @@
-import type { RecipeStatus, ShoppingListStatus } from "$lib/api/types";
+import type { RecipeStatus, ShoppingListStatus, ShoppingListVisibility } from "$lib/api/types";
+import { getCurrentLocale, getDictionary } from "$lib/i18n";
 
 export function formatMinutes(minutes: number | null): string {
+  const dictionary = getDictionary();
+
   if (!minutes && minutes !== 0) {
-    return "Not set";
+    return dictionary.common.notSet;
   }
 
   if (minutes < 60) {
@@ -16,7 +19,9 @@ export function formatMinutes(minutes: number | null): string {
 }
 
 export function formatDate(dateValue: string): string {
-  return new Intl.DateTimeFormat("en", {
+  const locale = getCurrentLocale() === "ru" ? "ru-RU" : "en-US";
+
+  return new Intl.DateTimeFormat(locale, {
     month: "short",
     day: "numeric",
     year: "numeric"
@@ -24,27 +29,31 @@ export function formatDate(dateValue: string): string {
 }
 
 export function formatRecipeStatus(status: RecipeStatus): string {
+  const dictionary = getDictionary();
+
   if (status === "published") {
-    return "Published";
+    return dictionary.recipes.status.published;
   }
 
   if (status === "private") {
-    return "Private";
+    return dictionary.recipes.status.private;
   }
 
   if (status === "archived") {
-    return "Archived";
+    return dictionary.recipes.status.archived;
   }
 
-  return "Draft";
+  return dictionary.recipes.status.draft;
 }
 
 export function formatShoppingListStatus(status: ShoppingListStatus): string {
-  return status === "active" ? "Active" : "Archived";
+  const dictionary = getDictionary();
+  return status === "active" ? dictionary.common.active : dictionary.common.archived;
 }
 
-export function formatShoppingListVisibility(visibility: import("$lib/api/types").ShoppingListVisibility): string {
-  return visibility === "public" ? "Public" : "Private";
+export function formatShoppingListVisibility(visibility: ShoppingListVisibility): string {
+  const dictionary = getDictionary();
+  return visibility === "public" ? dictionary.common.public : dictionary.common.private;
 }
 
 export function formatIngredientLine(amount: number | null, unit: string | null, name: string): string {

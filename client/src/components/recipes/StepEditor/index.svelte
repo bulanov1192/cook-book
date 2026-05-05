@@ -3,6 +3,7 @@
   import Card from "$components/ui/Card/index.svelte";
   import Field from "$components/ui/Field/index.svelte";
   import Textarea from "$components/ui/Textarea/index.svelte";
+  import { dictionary, formatMessage } from "$lib/i18n";
   import type { StepDraft } from "../RecipeForm/form";
   import { createEmptyStep } from "../RecipeForm/form";
   import styles from "./index.module.scss";
@@ -35,18 +36,25 @@
     <Card padding="md">
       <div class={styles.item}>
         <div class={styles.header}>
-          <h3 class={styles.title}>Step {index + 1}</h3>
+          <h3 class={styles.title}>
+            {formatMessage($dictionary.recipes.stepsEditor.itemTitle, { index: index + 1 })}
+          </h3>
           <Button variant="ghost" size="sm" on:click={() => removeStep(index)} disabled={steps.length === 1}>
-            Remove
+            {$dictionary.common.remove}
           </Button>
         </div>
 
-        <Field label="Instruction">
-          <Textarea value={step.instruction} rows={4} placeholder="Describe the action clearly" on:input={(event) => updateStep(index, getTextareaValue(event))} />
+        <Field label={$dictionary.recipes.stepsEditor.instruction}>
+          <Textarea
+            value={step.instruction}
+            rows={4}
+            placeholder={$dictionary.recipes.stepsEditor.instructionPlaceholder}
+            on:input={(event) => updateStep(index, getTextareaValue(event))}
+          />
         </Field>
       </div>
     </Card>
   {/each}
 
-  <Button variant="secondary" on:click={addStep}>Add step</Button>
+  <Button variant="secondary" on:click={addStep}>{$dictionary.recipes.stepsEditor.add}</Button>
 </div>

@@ -3,6 +3,7 @@
   import Card from "$components/ui/Card/index.svelte";
   import Field from "$components/ui/Field/index.svelte";
   import Select from "$components/ui/Select/index.svelte";
+  import { dictionary } from "$lib/i18n";
   import type { RecipeListItem } from "$lib/api/types";
   import styles from "./index.module.scss";
 
@@ -43,11 +44,16 @@
 
 <Card padding="md">
   <div class={styles.panel}>
-    <Field label="Import ingredients from a recipe" hint="Pick a recipe and copy all its ingredient lines into this list.">
+    <Field
+      label={$dictionary.shoppingLists.importPanel.label}
+      hint={$dictionary.shoppingLists.importPanel.hint}
+    >
       <div class={styles.grid}>
         <Select value={selectedRecipeId} options={recipeOptions} on:change={(event) => (selectedRecipeId = getSelectValue(event))} />
         <Button on:click={handleImport} disabled={!selectedRecipeId || isSubmitting}>
-          {isSubmitting ? "Importing..." : "Import"}
+          {isSubmitting
+            ? $dictionary.shoppingLists.importPanel.importing
+            : $dictionary.shoppingLists.importPanel.import}
         </Button>
       </div>
     </Field>

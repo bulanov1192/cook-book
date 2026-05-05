@@ -11,6 +11,7 @@ export type AccessContext = {
     email: string;
     name: string;
     role: Exclude<AppRole, "anonymous">;
+    locale?: "en" | "ru";
   } | null;
 };
 

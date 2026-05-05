@@ -3,6 +3,7 @@
   import PageIntro from "$components/layout/PageIntro/index.svelte";
   import RecipeForm from "$components/recipes/RecipeForm/index.svelte";
   import { updateRecipe } from "$lib/api/recipes";
+  import { dictionary, formatMessage } from "$lib/i18n";
   import type { RecipePayload } from "$lib/api/types";
   import styles from "./+page.module.scss";
 
@@ -18,14 +19,14 @@
 
 <div class={styles.page}>
   <PageIntro
-    eyebrow="Edit recipe"
-    title={`Refine ${data.recipe.title}`}
-    description="Keep the structure clear and the copy calm. This editor stays intentionally straightforward so the recipe data remains the main thing."
+    eyebrow={$dictionary.recipes.edit.eyebrow}
+    title={formatMessage($dictionary.recipes.edit.title, { title: data.recipe.title })}
+    description={$dictionary.recipes.edit.description}
   />
 
   <RecipeForm
     initialRecipe={data.recipe}
-    submitLabel="Save changes"
+    submitLabel={$dictionary.recipes.form.saveChanges}
     cancelHref={`/recipes/${data.recipe.id}`}
     onSubmit={handleSubmit}
   />

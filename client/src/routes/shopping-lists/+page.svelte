@@ -10,6 +10,7 @@
   import Select from "$components/ui/Select/index.svelte";
   import SectionHeader from "$components/ui/SectionHeader/index.svelte";
   import { createShoppingList } from "$lib/api/shopping-lists";
+  import { dictionary, formatMessage } from "$lib/i18n";
   import type { ShoppingListSummary, ShoppingListVisibility } from "$lib/api/types";
   import styles from "./+page.module.scss";
 
@@ -36,7 +37,7 @@
 
   async function handleCreate() {
     if (!listName.trim()) {
-      errorMessage = "Give the shopping list a name first.";
+      errorMessage = $dictionary.shoppingLists.nameRequired;
       return;
     }
 
@@ -63,7 +64,8 @@
       ];
       listName = "";
     } catch (error) {
-      errorMessage = error instanceof Error ? error.message : "Could not create the shopping list.";
+      errorMessage =
+        error instanceof Error ? error.message : $dictionary.shoppingLists.createFailed;
     } finally {
       isSubmitting = false;
     }
@@ -72,34 +74,35 @@
 
 <div class={styles.page}>
   <PageIntro
-    eyebrow="Shopping lists"
-    title="Turn recipe ingredients into practical kitchen lists."
+    eyebrow={$dictionary.shoppingLists.pageEyebrow}
+    title={$dictionary.shoppingLists.pageTitle}
     description={data.session.isAuthenticated
-      ? "Keep shopping lightweight. Create lists as needed, import from recipes, and mark items off without adding more complexity than the task deserves."
-      : "Shared public lists can still be opened by link, but your own planning workspace starts after sign in."}
+      ? $dictionary.shoppingLists.pageDescriptionSignedIn
+      : $dictionary.shoppingLists.pageDescriptionGuest}
   />
 
   {#if data.session.isAuthenticated}
     <Card>
       <div class={styles.createForm}>
-        <SectionHeader title="Create a new list" subtitle="Useful for weekly shopping, dinner prep, party planning or ingredient restocks." />
+        <SectionHeader title={$dictionary.shoppingLists.createTitle} subtitle={$dictionary.shoppingLists.createSubtitle} />
+        
 
         <form class={styles.createGrid} on:submit|preventDefault={handleCreate}>
-          <Field label="List name">
-            <Input value={listName} placeholder="Weekly produce run" on:input={(event) => (listName = getInputValue(event))} />
+          <Field label={$dictionary.shoppingLists.listName}>
+            <Input value={listName} placeholder={$dictionary.shoppingLists.listNamePlaceholder} on:input={(event) => (listName = getInputValue(event))} />
           </Field>
-          <Field label="Visibility">
+          <Field label={$dictionary.shoppingLists.visibility}>
             <Select
               value={visibility}
               options={[
-                { value: "private", label: "Private" },
-                { value: "public", label: "Public" }
+                { value: "private", label: $dictionary.common.private },
+                { value: "public", label: $dictionary.common.public }
               ]}
               on:change={(event) => (visibility = getSelectValue(event) as ShoppingListVisibility)}
             />
           </Field>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create list"}
+            {isSubmitting ? $dictionary.shoppingLists.creating : $dictionary.shoppingLists.create}
           </Button>
         </form>
 
@@ -112,7 +115,10 @@
 
   <section class="page-grid">
     {#if data.session.isAuthenticated}
-      <SectionHeader title={`Lists: ${lists.length}`} subtitle="Each list remains a focused workspace instead of a giant pile of ingredients." />
+      <SectionHeader
+        title={formatMessage($dictionary.shoppingLists.countTitle, { count: lists.length })}
+        subtitle={$dictionary.shoppingLists.countSubtitle}
+      />
 
       {#if lists.length}
         <div class={styles.listGrid}>
@@ -122,18 +128,18 @@
         </div>
       {:else}
         <EmptyState
-          title="No shopping lists yet"
-          description="Create one list and the rest of the flow becomes immediately clearer when you import ingredients from recipes."
+          title={$dictionary.shoppingLists.noListsTitle}
+          description={$dictionary.shoppingLists.noListsDescription}
         >
           <Button on:click={handleCreate} disabled={isSubmitting || !listName.trim()}>
-            Quick create
+            {$dictionary.shoppingLists.quickCreate}
           </Button>
         </EmptyState>
       {/if}
     {:else}
       <AuthPanel
-        title="Sign in to manage shopping lists"
-        description="Public shared lists remain accessible by direct link, but creating and editing lists belongs to signed-in users."
+        title={$dictionary.shoppingLists.signInTitle}
+        description={$dictionary.shoppingLists.signInDescription}
       />
     {/if}
   </section>

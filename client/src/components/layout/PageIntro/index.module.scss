@@ -13,15 +13,15 @@
 .eyebrow {
   color: var(--color-accent);
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: var(--eyebrow-tracking);
   font-size: 0.78rem;
   font-weight: 800;
 }
 
 .title {
-  font-size: clamp(2rem, 5vw, 3.8rem);
-  line-height: 0.98;
-  max-width: 12ch;
+  font-size: var(--page-intro-title-size);
+  line-height: var(--page-intro-title-line);
+  max-width: var(--page-intro-title-max);
 }
 
 .description {

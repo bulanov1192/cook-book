@@ -11,10 +11,11 @@
   export let name = "";
   export let value = "";
   export let options: SelectOption[] = [];
+  export let disabled = false;
 </script>
 
 <div class={styles.wrapper}>
-  <select class={styles.select} {id} {name} bind:value on:change>
+  <select class={styles.select} {id} {name} bind:value {disabled} on:change>
     {#each options as option}
       <option value={option.value}>{option.label}</option>
     {/each}

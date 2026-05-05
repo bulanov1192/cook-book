@@ -1,5 +1,6 @@
 <script lang="ts">
   import Button from "$components/ui/Button/index.svelte";
+  import { dictionary } from "$lib/i18n";
   import type { ShoppingListItem } from "$lib/api/types";
   import { formatIngredientLine } from "$utils/format";
   import styles from "./index.module.scss";
@@ -45,10 +46,12 @@
   {#if !readOnly}
     <div class={styles.actions}>
       <Button variant="secondary" size="sm" disabled={isBusy} on:click={handleToggle}>
-        {item.checked ? "Mark active" : "Mark done"}
+        {item.checked
+          ? $dictionary.shoppingLists.detail.markActive
+          : $dictionary.shoppingLists.detail.markDone}
       </Button>
       <Button variant="ghost" size="sm" disabled={isBusy} on:click={handleDelete}>
-        Remove
+        {$dictionary.common.remove}
       </Button>
     </div>
   {/if}

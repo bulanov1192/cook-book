@@ -12,7 +12,8 @@
 }
 
 .title {
-  font-size: clamp(1.45rem, 3vw, 2.1rem);
+  font-size: var(--section-title-size);
+  line-height: var(--section-title-line);
 }
 
 .subtitle {
